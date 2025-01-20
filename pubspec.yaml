@@ -1,26 +1,29 @@
 name: flutter_ignitr
 description: "A new Flutter package project."
 version: 0.0.1
-homepage: null
+homepage: https://github.com/thedevsbuddy/flutter_ignitr
 
 environment:
   sdk: ^3.6.0
   flutter: ">=1.17.0"
 
 dependencies:
+  archive: ^3.6.1
+  args: ^2.6.0
+  dcli: ^6.1.0
   flutter:
     sdk: flutter
-  dcli: ^6.1.0
-  path: ^1.9.0
   http: ^1.2.2
-  archive: ^3.6.1
+  path: ^1.9.0
+  pluralize: ^0.0.8
+  recase: ^4.1.0
 
 dev_dependencies:
   flutter_lints: ^5.0.0
   flutter_test:
     sdk: flutter
 
-flutter: null
+flutter:
 
 executables:
   flutter_ignitr: main
