@@ -1,11 +1,11 @@
 import 'package:dcli/dcli.dart';
 import 'package:recase/recase.dart';
 
-import '../../module/controllers/module_controller.dart' as modulr_controller;
-import '../../module/controllers/module_single_controller.dart' as modulr_single_controller;
+import '../../stubs/module/controllers/module_controller.dart' as modulr_controller;
+import '../../stubs/module/controllers/module_single_controller.dart' as modulr_single_controller;
 import 'base_generator.dart';
-import 'utilities/generator_types.dart';
-import 'utilities/utils.dart';
+import '../utilities/generator_types.dart';
+import '../utilities/utils.dart';
 
 class ControllerGenerator extends BaseGenerator {
   ControllerGenerator(super.args);

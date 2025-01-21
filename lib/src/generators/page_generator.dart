@@ -1,10 +1,10 @@
 import 'package:dcli/dcli.dart';
 import 'package:recase/recase.dart';
 
-import '../../module/views/module_page.dart' as modulr_page;
+import '../../stubs/module/views/module_page.dart' as modulr_page;
 import 'base_generator.dart';
-import 'utilities/generator_types.dart';
-import 'utilities/utils.dart';
+import '../utilities/generator_types.dart';
+import '../utilities/utils.dart';
 
 class PageGenerator extends BaseGenerator {
   PageGenerator(super.args);

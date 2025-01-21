@@ -1,8 +1,8 @@
 import 'package:dcli/dcli.dart';
 
-import '../../module/models/model.dart' as modulr_model;
+import '../../stubs/module/models/model.dart' as modulr_model;
 import 'base_generator.dart';
-import 'utilities/utils.dart';
+import '../utilities/utils.dart';
 
 class ModelGenerator extends BaseGenerator {
   ModelGenerator(super.args);

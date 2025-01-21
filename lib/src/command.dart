@@ -3,10 +3,10 @@ import 'dart:io';
 import 'package:args/args.dart';
 import 'package:dcli/dcli.dart';
 
-import 'controller_generator.dart';
-import 'module_generator.dart';
-import 'page_generator.dart';
-import 'project_generator.dart';
+import 'generators/controller_generator.dart';
+import 'generators/module_generator.dart';
+import 'generators/page_generator.dart';
+import 'generators/project_generator.dart';
 import 'utilities/generator_types.dart';
 import 'utilities/utils.dart';
 

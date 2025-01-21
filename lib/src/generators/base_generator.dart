@@ -1,7 +1,7 @@
 import 'package:recase/recase.dart';
 
-import 'utilities/generator_types.dart';
-import 'utilities/utils.dart';
+import '../utilities/generator_types.dart';
+import '../utilities/utils.dart';
 
 class BaseGenerator {
   Map<String, String> replaceables = {};

@@ -1,13 +1,13 @@
 import 'package:dcli/dcli.dart';
 
-import '../../module/module.dart' as modulr_module;
-import '../../module/routes/router.dart' as modulr_router;
+import '../../stubs/module/module.dart' as modulr_module;
+import '../../stubs/module/routes/router.dart' as modulr_router;
 import 'base_generator.dart';
 import 'controller_generator.dart';
 import 'model_generator.dart';
 import 'page_generator.dart';
 import 'service_generator.dart';
-import 'utilities/utils.dart';
+import '../utilities/utils.dart';
 
 class ModuleGenerator extends BaseGenerator {
   ModuleGenerator(super.args);
