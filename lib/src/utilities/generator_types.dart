@@ -3,6 +3,7 @@ class GeneratorTypes {
   final String? module;
   final String? controller;
   final String? page;
+  final String? projectVersion;
 
-  GeneratorTypes({this.project, this.module, this.controller, this.page});
+  GeneratorTypes({this.project, this.module, this.controller, this.page, this.projectVersion});
 }

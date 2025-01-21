@@ -14,6 +14,7 @@ class ProjectGenerator extends BaseGenerator {
   String templateUrl = "";
   String projectTempPath = "";
   String projectPath = "";
+  String projectVersion = "";
 
   Map<String, String> _replacements = {};
 
@@ -21,11 +22,18 @@ class ProjectGenerator extends BaseGenerator {
     projectName = ReCase(args.project ?? "");
     projectPath = projectName.snakeCase;
     projectTempPath = join(projectPath, "temp");
-    templateUrl = "${Config.projectTemplateUrl}/heads/${Config.projectTemplateVersion}.zip";
+    projectVersion = args.projectVersion == null
+        ? "heads/${Config.projectTemplateVersion}"
+        : args.projectVersion == "latest"
+            ? "heads/${Config.projectTemplateVersion}"
+            : "tags/${args.projectVersion}";
+
+    templateUrl = "${Config.projectTemplateUrl}/$projectVersion.zip";
+
     _replacements = {
-      'com.devsbuddy.flutter_fusion': "com.devsbuddy.${projectName.snakeCase}",
-      'flutter_fusion': projectName.snakeCase, // FIXME: Update the template files to use the ignitr_template
-      'Flutter Fusion': projectName.titleCase, // FIXME: Update the template files to use the Ignitr Template
+      'com.devsbuddy.ignitr_template': "com.devsbuddy.${projectName.snakeCase}",
+      'ignitr_template': projectName.snakeCase, // FIXME: Update the template files to use the ignitr_template
+      'Ignitr': projectName.titleCase, // FIXME: Update the template files to use the Ignitr Template
     };
   }
 
@@ -38,12 +46,9 @@ class ProjectGenerator extends BaseGenerator {
     try {
       Directory(projectTempPath).createSync(recursive: true);
       // Download the ZIP file
-      print(blue('Downloading ZIP from $templateUrl...'));
       final response = await http.get(Uri.parse(templateUrl));
 
       if (response.statusCode == 200 && response.bodyBytes.isNotEmpty) {
-        print(green('Fetched ignitr template content.'));
-
         // Write ZIP to a temporary file
         final templateFile = File('$projectTempPath/repo.zip');
         await templateFile.writeAsBytes(response.bodyBytes);
@@ -51,11 +56,9 @@ class ProjectGenerator extends BaseGenerator {
         // Validate and extract the ZIP file
         try {
           final archive = ZipDecoder().decodeBytes(templateFile.readAsBytesSync());
-          print(blue('ZIP file is valid.'));
 
           // Extract ZIP contents, stripping the root directory
           final rootDir = archive.firstWhere((file) => file.isFile).name.split('/')[0];
-          print(yellow('Root directory found: $rootDir'));
 
           for (ArchiveFile file in archive) {
             // Remove the root directory prefix
@@ -72,8 +75,6 @@ class ProjectGenerator extends BaseGenerator {
               Directory(targetPath).createSync(recursive: true);
             }
           }
-
-          print('Repository extracted to $projectTempPath without wrapping directory.');
         } catch (e) {
           throw Exception('Invalid ZIP file: $e');
         } finally {
@@ -81,6 +82,8 @@ class ProjectGenerator extends BaseGenerator {
           final fromTemp = Directory(projectTempPath);
           await copyDirectory(fromTemp, projectDir, projectName.snakeCase);
           fromTemp.deleteSync(recursive: true);
+          print(green('Project created successfully!'));
+          print(blue('Create something awesome!'));
           // zipFile.deleteSync();
         }
       } else {
