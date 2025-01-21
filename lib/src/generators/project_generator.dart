@@ -15,6 +15,7 @@ class ProjectGenerator extends BaseGenerator {
   String projectTempPath = "";
   String projectPath = "";
   String projectVersion = "";
+  String organizationName = "";
 
   Map<String, String> _replacements = {};
 
@@ -22,18 +23,20 @@ class ProjectGenerator extends BaseGenerator {
     projectName = ReCase(args.project ?? "");
     projectPath = projectName.snakeCase;
     projectTempPath = join(projectPath, "temp");
-    projectVersion = args.projectVersion == null
-        ? "heads/${Config.projectTemplateVersion}"
-        : args.projectVersion == "latest"
-            ? "heads/${Config.projectTemplateVersion}"
-            : "tags/${args.projectVersion}";
+    if (Config.inDevMode) {
+      projectVersion = "heads/main";
+    } else {
+      projectVersion = args.projectVersion == null || args.projectVersion == "latest" ? "tags/${Config.projectTemplateVersion}" : "tags/${args.projectVersion}";
+    }
+
+    organizationName = args.organization?.toLowerCase() ?? "com.example";
 
     templateUrl = "${Config.projectTemplateUrl}/$projectVersion.zip";
 
     _replacements = {
-      'com.devsbuddy.ignitr_template': "com.devsbuddy.${projectName.snakeCase}",
-      'ignitr_template': projectName.snakeCase, // FIXME: Update the template files to use the ignitr_template
-      'Ignitr': projectName.titleCase, // FIXME: Update the template files to use the Ignitr Template
+      'com.devsbuddy.flutter_ignitr': "$organizationName.${projectName.snakeCase}",
+      'flutter_ignitr': projectName.snakeCase,
+      'Ignitr': projectName.titleCase,
     };
   }
 

@@ -5,7 +5,7 @@ Ignitr is a simple yet powerful flutter mini framework, designed to simplify the
 ### Getting Started
 
 ```shell
-dart pub global activate ignitr
+dart pub global activate ignitr_cli
 ```
 
 ### Usage

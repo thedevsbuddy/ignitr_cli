@@ -1,7 +1,7 @@
-name: ignitr
+name: ignitr_cli
 description: "A new Flutter package project."
 version: 0.0.1
-homepage: https://github.com/thedevsbuddy/ignitr
+homepage: https://github.com/thedevsbuddy/ignitr_cli
 
 environment:
   sdk: ^3.6.0

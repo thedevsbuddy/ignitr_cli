@@ -15,7 +15,7 @@ import 'utilities/template_version.dart';
 import 'utilities/utils.dart';
 
 List<Map<String, String>> _allowedCommands = [
-  {"name": "create", "description": "Creates a new project", 'usage': "create <project_name> --version=<template_version>"},
+  {"name": "create", "description": "Creates a new project", 'usage': "create <project_name> --version=<template_version> --organization=<organization_name>"},
   {"name": "make:module", "description": "Generate a new module", 'usage': "make:module <module_name>"},
   {"name": "make:page", "description": "Generate a new module", 'usage': "make:page <page_name> --on=<module_name>"},
 ];
@@ -46,8 +46,9 @@ class Command {
     }
 
     final parser = ArgParser()
-      ..addOption('on', abbr: 'o', help: 'Specify the module name for the page.')
-      ..addOption('version', abbr: 'v', help: 'Specify the verion to use for your project.');
+      ..addOption('on', help: 'Specify the module name for the page.')
+      ..addOption('version', help: 'Specify the verion to use for your project.')
+      ..addOption('organization', help: 'Specify the organization name.');
 
     // Parsing arguments
     argResults = parser.parse(args);
@@ -102,19 +103,20 @@ class Command {
   Future<void> handleCreate(List<String> args, ArgResults argResults) async {
     String? projectName = args.isNotEmpty ? args.first : null;
     String? projectVersion = argResults['version'];
+    String? organizationName = argResults['organization'];
     projectName ??= askName("Project");
     projectVersion ??= _askVersion();
-
-    if (projectName == null) {
-      stdout.write('Enter project name: ');
-      projectName = stdin.readLineSync()?.trim();
-    }
+    organizationName ??= _askOrganization();
 
     if (projectName == null || projectName.isEmpty) {
       print('Project name is required!');
       return;
     }
-    ProjectGenerator projectGenerator = ProjectGenerator(GeneratorTypes(project: projectName, projectVersion: projectVersion));
+    ProjectGenerator projectGenerator = ProjectGenerator(GeneratorTypes(
+      project: projectName,
+      projectVersion: projectVersion,
+      organization: organizationName,
+    ));
     await projectGenerator.generate();
   }
 
@@ -163,5 +165,9 @@ class Command {
     }
 
     return templateVersions.elementAt(selectedIndex).version;
+  }
+
+  String? _askOrganization() {
+    return ask(blue('Enter the number of your choice:'), required: false, defaultValue: 'com.example');
   }
 }
