@@ -2,7 +2,7 @@ const String stub = """
 import '../../../shared/shared.dart';
 import '{SNAKE_MODULE}_service.dart';
 
-class Api{MODULE}Service extends BaseService implements {MODULE}Service {  
+class Remote{MODULE}Service extends BaseService implements {MODULE}Service {  
   @override
   Future<ApiResponse> index({required String client}) {
     // TODO: implement index

@@ -1,22 +1,27 @@
 const String stub = """
 import 'package:get/get.dart';
 
+import '../../../../config/config.dart';
 import '../../../shared/shared.dart';
-import 'api_{SNAKE_MODULE}_service.dart';
+import 'remote_{SNAKE_MODULE}_service.dart';
 import 'local_{SNAKE_MODULE}_service.dart';
 
 abstract class {MODULE}Service extends BaseService {
   /// Define if this is in dev mode
-  static const bool devMode = true;
+  static bool devMode = Config.devMode;
 
   /// Create and get the instance of [{MODULE}Service]
   static {MODULE}Service get instance {
     InternetService internetService = InternetService.instance;
-    if (!Get.isRegistered<{MODULE}Service>()) Get.lazyPut<{MODULE}Service>(() {
+
+    if (!Get.isRegistered<{MODULE}Service>()) {
+      Get.lazyPut<{MODULE}Service>(() {
         if (devMode) return Local{MODULE}Service();
         if (!internetService.isConnected) return Local{MODULE}Service();
-        return Api{MODULE}Service();
+        return Remote{MODULE}Service();
       });
+    }
+
     return Get.find<{MODULE}Service>();
   }
   

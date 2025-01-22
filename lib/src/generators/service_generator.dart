@@ -1,6 +1,6 @@
 import 'package:dcli/dcli.dart';
 
-import '../../stubs/module/services/api_module_service.dart' as modulr_api_service;
+import '../../stubs/module/services/remote_module_service.dart' as modulr_api_service;
 import '../../stubs/module/services/local_module_service.dart' as modulr_local_service;
 import '../../stubs/module/services/module_service.dart' as modulr_service;
 import 'base_generator.dart';
@@ -21,11 +21,11 @@ class ServiceGenerator extends BaseGenerator {
     /// Write File
     Utils.writeFile("$servicePath/${moduleName.snakeCase}_service.dart", serviceFile);
     Utils.writeFile("$servicePath/local_${moduleName.snakeCase}_service.dart", serviceLocalFile);
-    Utils.writeFile("$servicePath/api_${moduleName.snakeCase}_service.dart", serviceApiFile);
+    Utils.writeFile("$servicePath/remote_${moduleName.snakeCase}_service.dart", serviceApiFile);
 
     /// Show Success message
     print(green('"$servicePath/${moduleName.snakeCase}_service.dart" generated successfully.'));
     print(green('"$servicePath/local_${moduleName.snakeCase}_service.dart" generated successfully.'));
-    print(green('"$servicePath/api_${moduleName.snakeCase}_service.dart" generated successfully.'));
+    print(green('"$servicePath/remote_${moduleName.snakeCase}_service.dart" generated successfully.'));
   }
 }
