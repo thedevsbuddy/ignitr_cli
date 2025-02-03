@@ -1,8 +1,6 @@
 import 'package:dcli/dcli.dart';
+import 'package:ignitr_cli/src/models/stub.dart';
 
-import '../../stubs/module/services/remote_module_service.dart' as modulr_api_service;
-import '../../stubs/module/services/local_module_service.dart' as modulr_local_service;
-import '../../stubs/module/services/module_service.dart' as modulr_service;
 import 'base_generator.dart';
 import '../utilities/utils.dart';
 
@@ -14,9 +12,9 @@ class ServiceGenerator extends BaseGenerator {
     Utils.makeDir(servicePath);
 
     /// Replace slots with actual value
-    String serviceFile = parseStub(modulr_service.stub);
-    String serviceLocalFile = parseStub(modulr_local_service.stub);
-    String serviceApiFile = parseStub(modulr_api_service.stub);
+    String serviceFile = parseStub(stubs.firstWhere((item) => item.type == StubType.service).content);
+    String serviceLocalFile = parseStub(stubs.firstWhere((item) => item.type == StubType.localService).content);
+    String serviceApiFile = parseStub(stubs.firstWhere((item) => item.type == StubType.remoteService).content);
 
     /// Write File
     Utils.writeFile("$servicePath/${moduleName.snakeCase}_service.dart", serviceFile);

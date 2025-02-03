@@ -1,8 +1,7 @@
 import 'package:dcli/dcli.dart';
 import 'package:recase/recase.dart';
 
-import '../../stubs/module/controllers/module_controller.dart' as modulr_controller;
-import '../../stubs/module/controllers/module_single_controller.dart' as modulr_single_controller;
+import '../models/stub.dart';
 import 'base_generator.dart';
 import '../utilities/generator_types.dart';
 import '../utilities/utils.dart';
@@ -17,7 +16,7 @@ class ControllerGenerator extends BaseGenerator {
     }
 
     /// Get stub
-    String stub = single ? modulr_single_controller.stub : modulr_controller.stub;
+    String stub = single ? stubs.firstWhere((item) => item.type == StubType.singleController).content : stubs.firstWhere((item) => item.type == StubType.controller).content;
 
     /// Generate Controller
     Utils.makeDir(controllerPath);

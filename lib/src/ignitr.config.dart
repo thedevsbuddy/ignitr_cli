@@ -4,8 +4,10 @@
 ///
 class Config {
   /// The URL of the project template repository used by the Ignitr CLI.
-  static final String projectTemplateUrl = "https://github.com/thedevsbuddy/flutter_ignitr/archive/refs";
-  static final String projectTemplateVersion = "v0.1.0";
-  static final bool inDevMode = true;
-  static final String projectTemplateVersionApi = "https://api.github.com/repos/thedevsbuddy/flutter_ignitr/releases";
+  static final String devProjectTemplateUrl = "https://github.com/thedevsbuddy/flutter_ignitr/archive/refs/heads/main.zip";
+  static final String templatesUrl = "https://api.github.com/repos/iamspydey/flutter_ignitr_multi_flavors_test/releases/tags";
+  static final String templateVersion = "v0.1.7";
+  static final bool inDevMode = false;
+  static final String getFlavorsUrl = Config.templatesUrl;
+  static final String templateVersionsApi = "https://api.github.com/repos/iamspydey/flutter_ignitr_multi_flavors_test/releases";
 }

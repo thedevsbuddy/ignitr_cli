@@ -1,6 +1,6 @@
 import 'package:dcli/dcli.dart';
 
-import '../../stubs/module/models/model.dart' as modulr_model;
+import '../models/stub.dart';
 import 'base_generator.dart';
 import '../utilities/utils.dart';
 
@@ -17,7 +17,7 @@ class ModelGenerator extends BaseGenerator {
     Utils.makeDir(modelPath);
 
     /// Replace slots with actual value
-    String modelFile = parseStub(modulr_model.stub);
+    String modelFile = parseStub(stubs.firstWhere((item) => item.type == StubType.model).content);
 
     /// Write File
     Utils.writeFile("$modelPath/${moduleName.snakeCase}_model.dart", modelFile);

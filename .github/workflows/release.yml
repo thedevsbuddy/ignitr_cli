@@ -1,0 +1,82 @@
+name: Flutter Package Release
+
+on:
+  push:
+    branches:
+      - "major/*"
+      - "minor/*"
+      - "patch/*"
+
+jobs:
+  release-pub-dev:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # Required for authentication using OIDC
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "stable"
+
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: "stable"  # You can specify the version here (e.g., "stable" or a specific version)
+
+      - name: Install dependencies
+        run: dart pub get
+
+      - name: Get current version
+        id: version
+        run: |
+          VERSION=$(dart pub version | awk '{print $2}')
+          echo "Current version: $VERSION"
+          echo "::set-output name=version::$VERSION"
+
+      - name: Extract version from branch name
+        id: extract_version
+        run: |
+          BRANCH="${GITHUB_REF#refs/heads/}"
+
+          if [[ "$BRANCH" =~ ^(major|minor|patch)/v([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
+            NEW_VERSION="${BASH_REMATCH[2]}"
+            echo "Extracted version: $NEW_VERSION"
+            echo "::set-output name=new_version::$NEW_VERSION"
+          else
+            echo "Branch name does not contain a valid version number"
+            exit 1
+          fi
+
+      - name: Update version in pubspec.yaml
+        run: |
+          NEW_VERSION="${{ steps.extract_version.outputs.new_version }}"
+          echo "version: $NEW_VERSION" >> pubspec.yaml
+          dart pub get
+
+      - name: Publish package to pub.dev
+        run: dart pub publish --force  # Publish the package with force flag
+
+      - name: Create a Git tag
+        run: |
+          NEW_VERSION="${{ steps.extract_version.outputs.new_version }}"
+          git tag -a "v$NEW_VERSION" -m "Release version $NEW_VERSION"
+          git push origin "v$NEW_VERSION"
+
+  release-github:
+    runs-on: ubuntu-latest
+    needs: release-pub-dev
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Create GitHub release
+        id: create_release
+        run: |
+          BRANCH="${GITHUB_REF#refs/heads/}"
+          NEW_VERSION="${{ needs.release-pub-dev.outputs.new_version }}"
+          gh release create "v$NEW_VERSION" --title "Release $NEW_VERSION" --notes "Release version $NEW_VERSION" --target "$BRANCH"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

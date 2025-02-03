@@ -1,10 +1,17 @@
+import 'dart:io';
+
+import 'package:path/path.dart';
 import 'package:recase/recase.dart';
 
+import '../ignitr.config.dart';
+import '../models/stub.dart';
 import '../utilities/generator_types.dart';
 import '../utilities/utils.dart';
 
 class BaseGenerator {
-  Map<String, String> replaceables = {};
+  Map<String, String> stubReplacements = {};
+  Map<String, String> nameReplacements = {};
+  List<Stub> stubs = [];
 
   GeneratorTypes args = GeneratorTypes();
 
@@ -12,6 +19,7 @@ class BaseGenerator {
   ReCase moduleName = ReCase("");
   ReCase controllerName = ReCase("");
   ReCase pageName = ReCase("");
+  ReCase projectName = ReCase("");
 
   /// String properties
   String modulePath = "";
@@ -22,6 +30,11 @@ class BaseGenerator {
   String pagePath = "";
   String routePath = "";
   String baseRoutePath = "";
+  String templateUrl = "";
+  String projectTempPath = "";
+  String projectPath = "";
+  String organizationName = "";
+  String flavor = "";
 
   BaseGenerator(this.args) {
     moduleName = ReCase(args.module ?? "");
@@ -34,14 +47,37 @@ class BaseGenerator {
     modulePath = "$modulesPath/${moduleName.pascalCase}";
     modelPath = "lib/app/models";
     baseRoutePath = "lib/routes";
-    controllerPath = "lib/app/modules/${moduleName.snakeCase}/controllers";
-    servicePath = "lib/app/modules/${moduleName.snakeCase}/services";
-    pagePath = "lib/app/modules/${moduleName.snakeCase}/views";
-    routePath = "lib/app/modules/${moduleName.snakeCase}/routes";
+    controllerPath = "$modulesPath/${moduleName.snakeCase}/controllers";
+    servicePath = "$modulesPath/${moduleName.snakeCase}/services";
+    pagePath = "$modulesPath/${moduleName.snakeCase}/views";
+    routePath = "$modulesPath/${moduleName.snakeCase}/routes";
+
+    projectName = ReCase(args.project ?? "");
+    projectPath = projectName.snakeCase;
+    projectTempPath = join(projectPath, "temp");
+    flavor = args.flavor ?? "pocketbase";
+    if (Config.inDevMode) {
+      templateUrl = Config.devProjectTemplateUrl;
+    } else {
+      templateUrl = args.templateUrl ?? Config.devProjectTemplateUrl;
+    }
+
+    organizationName = args.organization?.toLowerCase() ?? "com.example";
+
+    nameReplacements = {
+      'com.devsbuddy.flutter_ignitr': "$organizationName.${projectName.snakeCase}",
+      'flutter_ignitr': projectName.snakeCase,
+      'Ignitr': projectName.titleCase,
+    };
+  }
+
+  Future<void> init() async {
+    /// Load all stubs
+    await _loadStubs();
   }
 
   String parseStub(String stub) {
-    replaceables = {
+    stubReplacements = {
       '{CONTROLLER}': controllerName.pascalCase,
       '{SNAKE_CONTROLLER}': controllerName.snakeCase,
       '{MODULE}': moduleName.pascalCase,
@@ -56,9 +92,30 @@ class BaseGenerator {
     };
 
     String file = stub;
-    for (String key in replaceables.keys) {
-      file = file.replaceAll(key, replaceables[key]!);
+    for (String key in stubReplacements.keys) {
+      file = file.replaceAll(key, stubReplacements[key]!);
     }
     return file;
+  }
+
+  Future<void> _loadStubs() async {
+    Directory stubDirectory = Directory('.ignitr/stubs');
+    if (!(await stubDirectory.exists())) {
+      // throw Exception("Stubs directory not found, Please run 'ignitr publish:stubs' to");
+    } else {
+      await for (var entity in stubDirectory.list(recursive: true)) {
+        if (entity is File) {
+          String stubFile = entity.readAsStringSync();
+          String stubName = entity.path.split("/").last.split(".").first.replaceAll('/', "\\").split('\\').last;
+          Stub stub = Stub(
+            name: stubName,
+            type: StubType.values.firstWhere((element) => element.name == stubName, orElse: () => StubType.controller),
+            content: stubFile,
+            outPath: entity.path.split("/").last.split(".").first,
+          );
+          stubs.add(stub);
+        }
+      }
+    }
   }
 }

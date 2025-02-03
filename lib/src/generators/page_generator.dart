@@ -1,7 +1,7 @@
 import 'package:dcli/dcli.dart';
 import 'package:recase/recase.dart';
 
-import '../../stubs/module/views/module_page.dart' as modulr_page;
+import '../models/stub.dart';
 import 'base_generator.dart';
 import '../utilities/generator_types.dart';
 import '../utilities/utils.dart';
@@ -10,13 +10,16 @@ class PageGenerator extends BaseGenerator {
   PageGenerator(super.args);
 
   Future<void> generate([bool single = false]) async {
+    print(">>>> Generate pageName: ${args.page}");
+    print(">>>> Generate moduleName: ${args.module}");
+
     /// Validate arguments
     if (single) {
-      if (!_validateArgs(args)) return;
+      if (!(_validateArgs(args))) return;
     }
 
     /// Get stub
-    String stub = modulr_page.stub;
+    String stub = stubs.firstWhere((item) => item.type == StubType.page).content;
 
     /// Generate Controller
     Utils.makeDir(pagePath);
@@ -48,6 +51,7 @@ class PageGenerator extends BaseGenerator {
       print(yellow('`export "${pageName.snakeCase}_page.dart"` already exists in $moduleFilePath'));
       return;
     }
+
     moduleFileContent = """
       $moduleFileContent
       export '$exportFile';
@@ -61,6 +65,9 @@ class PageGenerator extends BaseGenerator {
   }
 
   bool _validateArgs(GeneratorTypes args) {
+    print(">>>> Validate pageName: ${args.page}");
+    print(">>>> Validate moduleName: ${args.module}");
+
     /// Assign module name
     moduleName = ReCase(args.module ?? "");
 

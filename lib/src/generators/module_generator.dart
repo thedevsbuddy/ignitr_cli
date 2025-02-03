@@ -1,7 +1,6 @@
 import 'package:dcli/dcli.dart';
 
-import '../../stubs/module/module.dart' as modulr_module;
-import '../../stubs/module/routes/router.dart' as modulr_router;
+import '../models/stub.dart';
 import 'base_generator.dart';
 import 'controller_generator.dart';
 import 'model_generator.dart';
@@ -15,14 +14,17 @@ class ModuleGenerator extends BaseGenerator {
   Future<void> generate() async {
     // Controller
     ControllerGenerator controllerGenerator = ControllerGenerator(args);
+    await controllerGenerator.init();
     await controllerGenerator.generate();
 
     // Service
     ServiceGenerator serviceGenerator = ServiceGenerator(args);
+    await serviceGenerator.init();
     await serviceGenerator.generate();
 
     // Page
     PageGenerator pageGenerator = PageGenerator(args);
+    await pageGenerator.init();
     await pageGenerator.generate();
 
     // Routes
@@ -33,6 +35,7 @@ class ModuleGenerator extends BaseGenerator {
 
     // Page
     ModelGenerator modelGenerator = ModelGenerator(args);
+    await modelGenerator.init();
     await modelGenerator.generate();
 
     // Update Routes Export
@@ -46,7 +49,7 @@ class ModuleGenerator extends BaseGenerator {
     /// Check and create directory
     Utils.makeDir(modulePath);
 
-    String moduleFile = modulr_module.stub.replaceAll('{SNAKE_MODULE}', moduleName.snakeCase);
+    String moduleFile = stubs.firstWhere((item) => item.type == StubType.module).content.replaceAll('{SNAKE_MODULE}', moduleName.snakeCase);
     moduleFile = moduleFile.replaceAll('{MODULE}', moduleName.pascalCase);
 
     /// Write File
@@ -61,7 +64,7 @@ class ModuleGenerator extends BaseGenerator {
     Utils.makeDir(routePath);
 
     /// Replace slots with actual value
-    String routeFile = parseStub(modulr_router.stub);
+    String routeFile = parseStub(stubs.firstWhere((item) => item.type == StubType.router).content);
 
     /// Write File
     Utils.writeFile("$routePath/${moduleName.snakeCase}_router.dart", routeFile);

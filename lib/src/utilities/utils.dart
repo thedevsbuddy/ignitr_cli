@@ -71,7 +71,7 @@ class Utils {
     return text.replaceAll('.', needle);
   }
 
-  static formatGeneratedCode() async {
+  static Future<void> formatGeneratedCode() async {
     print(blue('Formatting Generated Code....'));
     try {
       final moduleResult = await Process.run('dart', ['format', 'lib/app']);

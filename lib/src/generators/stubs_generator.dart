@@ -7,28 +7,28 @@ import 'package:path/path.dart';
 
 import 'base_generator.dart';
 
-class ProjectGenerator extends BaseGenerator {
-  ProjectGenerator(super.args);
+class StubsGenerator extends BaseGenerator {
+  StubsGenerator(super.args);
 
   Future<void> generate() async {
-    print(blue('Creating project: ${projectName.snakeCase}'));
-    await _downloadProjectTemplate();
+    await _downloadStubs();
   }
 
-  Future<void> _downloadProjectTemplate() async {
+  Future<void> _downloadStubs() async {
     try {
-      Directory(projectTempPath).createSync(recursive: true);
+      String stubsTempPath = '$projectPath/.ignitr/stubs/temp';
+      Directory(stubsTempPath).createSync(recursive: true);
       // Download the ZIP file
-      final response = await http.get(Uri.parse(templateUrl));
+      final response = await http.get(Uri.parse(args.stubsUrl!));
 
       if (response.statusCode == 200 && response.bodyBytes.isNotEmpty) {
         // Write ZIP to a temporary file
-        final templateFile = File('$projectTempPath/repo.zip');
-        await templateFile.writeAsBytes(response.bodyBytes);
+        final stubArchiveFile = File('$stubsTempPath/stubs.zip');
+        await stubArchiveFile.writeAsBytes(response.bodyBytes);
 
         // Validate and extract the ZIP file
         try {
-          final archive = ZipDecoder().decodeBytes(templateFile.readAsBytesSync());
+          final archive = ZipDecoder().decodeBytes(stubArchiveFile.readAsBytesSync());
 
           // Extract ZIP contents, stripping the root directory
           final rootDir = archive.firstWhere((file) => file.isFile).name.split('/')[0];
@@ -39,7 +39,7 @@ class ProjectGenerator extends BaseGenerator {
 
             if (filePath.isEmpty) continue; // Skip the root directory itself
 
-            final targetPath = '$projectTempPath/$filePath';
+            final targetPath = '$stubsTempPath/$filePath';
             if (file.isFile) {
               File(targetPath)
                 ..createSync(recursive: true)
@@ -51,10 +51,12 @@ class ProjectGenerator extends BaseGenerator {
         } catch (e) {
           throw Exception('Invalid ZIP file: $e');
         } finally {
-          final projectDir = Directory(projectPath);
-          final fromTemp = Directory(projectTempPath);
-          await _copyGeneratedProject(fromTemp, projectDir);
-          await Future.delayed(Duration(seconds: 1), () => fromTemp.deleteSync(recursive: true));
+          final stubsDir = Directory("$projectPath/.ignitr/stubs");
+          final fromTemp = Directory(stubsTempPath);
+          await _copyDownloadedStubs(fromTemp, stubsDir);
+          await Future.delayed(Duration(milliseconds: 1500), () => fromTemp.deleteSync(recursive: true));
+          print(green('Project created successfully!'));
+          print(blue('Create something awesome!'));
         }
       } else {
         throw Exception('Failed to download ZIP: ${response.statusCode}');
@@ -64,7 +66,7 @@ class ProjectGenerator extends BaseGenerator {
     }
   }
 
-  Future<void> _copyGeneratedProject(Directory source, Directory destination) async {
+  Future<void> _copyDownloadedStubs(Directory source, Directory destination) async {
     if (!source.existsSync()) {
       throw Exception('Source directory does not exist: ${source.path}');
     }
@@ -80,28 +82,12 @@ class ProjectGenerator extends BaseGenerator {
 
       if (entity is Directory) {
         // Recursively copy subdirectory
-        await _copyGeneratedProject(entity, Directory(newPath));
+        await _copyDownloadedStubs(entity, Directory(newPath));
       } else if (entity is File) {
         if (entity.path.endsWith('.zip')) {
           continue;
         }
-
-        if (entity.path.endsWith('.dart') ||
-            entity.path.endsWith('.yml') ||
-            entity.path.endsWith('.yaml') ||
-            entity.path.endsWith('.xml') ||
-            entity.path.endsWith('.kt') ||
-            entity.path.endsWith('.plist') ||
-            entity.path.endsWith('.gradle')) {
-          String content = await entity.readAsString();
-
-          for (var entry in nameReplacements.entries) {
-            content = content.replaceAll(entry.key, entry.value);
-          }
-          await File(newPath).writeAsString(content);
-        } else {
-          entity.copySync(newPath);
-        }
+        entity.copySync(newPath);
       }
     }
   }

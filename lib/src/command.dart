@@ -1,16 +1,11 @@
-import 'dart:convert';
-import 'dart:io';
+// ignore_for_file: avoid_print
 
 import 'package:args/args.dart';
 import 'package:dcli/dcli.dart';
-import 'package:http/http.dart' as http;
+import 'package:ignitr_cli/src/services/create_project_service.dart';
 
-import 'generators/controller_generator.dart';
-import 'generators/module_generator.dart';
-import 'generators/page_generator.dart';
-import 'generators/project_generator.dart';
-import 'ignitr.config.dart';
-import 'utilities/generator_types.dart';
+import 'services/make_module_service.dart';
+import 'services/make_page_service.dart';
 import 'utilities/template_version.dart';
 import 'utilities/utils.dart';
 
@@ -61,113 +56,29 @@ class Command {
     switch (command) {
       case 'create':
         // Fetch the template versions
-        await _getTemplateVersions();
-        await handleCreate(args.skip(1).toList(), argResults);
-        Utils.formatGeneratedCode();
+        CreateProjectService createProjectService = CreateProjectService();
+        await createProjectService.init(args.skip(1).toList(), argResults);
+        await createProjectService.handle();
         break;
 
       case 'make:module':
-        await handleMakeModule(args.skip(1).toList());
+        // Fetch the template versions
+        MakeModuleService makeModuleService = MakeModuleService();
+        await makeModuleService.init(args.skip(1).toList(), argResults);
+        await makeModuleService.handle();
         Utils.formatGeneratedCode();
         break;
 
       case 'make:page':
-        await handleMakePage(args.skip(1).toList(), argResults);
+        // Fetch the template versions
+        MakePageService makePageService = MakePageService();
+        await makePageService.init(args.skip(1).toList(), argResults);
+        await makePageService.handle();
         Utils.formatGeneratedCode();
         break;
 
       default:
         print('Unknown command: $command');
     }
-  }
-
-  Future<void> _getTemplateVersions() async {
-    final url = Uri.parse(Config.projectTemplateVersionApi);
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      List<Map<String, dynamic>> releases = List<Map<String, dynamic>>.from(json.decode(response.body));
-      templateVersions = List<TemplateVersion>.from(releases.map((release) => TemplateVersion.fromJson(release)));
-      templateVersions.insert(
-          0,
-          TemplateVersion(
-            version: "latest",
-            versionName: "Latest",
-            isPrerelease: false,
-          ));
-    } else {
-      print(red("Failed to fetch releases: ${response.statusCode}"));
-    }
-  }
-
-  Future<void> handleCreate(List<String> args, ArgResults argResults) async {
-    String? projectName = args.isNotEmpty ? args.first : null;
-    String? projectVersion = argResults['version'];
-    String? organizationName = argResults['organization'];
-    projectName ??= askName("Project");
-    projectVersion ??= _askVersion();
-    organizationName ??= _askOrganization();
-
-    if (projectName == null || projectName.isEmpty) {
-      print('Project name is required!');
-      return;
-    }
-    ProjectGenerator projectGenerator = ProjectGenerator(GeneratorTypes(
-      project: projectName,
-      projectVersion: projectVersion,
-      organization: organizationName,
-    ));
-    await projectGenerator.generate();
-  }
-
-  Future<void> handleMakeModule(List<String> args) async {
-    String? moduleName = args.isNotEmpty ? args.first : null;
-    moduleName ??= askName("Module");
-    ModuleGenerator moduleGenerator = ModuleGenerator(GeneratorTypes(module: moduleName));
-    await moduleGenerator.generate();
-  }
-
-  Future<void> handleMakePage(List<String> args, ArgResults argResults) async {
-    String? pageName = args.isNotEmpty ? args.first : null;
-    String? moduleName = argResults['on'];
-    moduleName ??= askName("Module");
-    pageName ??= askName("Page");
-
-    PageGenerator pageGenerator = PageGenerator(GeneratorTypes(module: moduleName, page: pageName));
-    await pageGenerator.generate(true);
-    ControllerGenerator controllerGenerator = ControllerGenerator(GeneratorTypes(module: moduleName, controller: pageName));
-    await controllerGenerator.generate(true);
-  }
-
-  String? askName(String type) {
-    stdout.write(blue('Enter $type name: '));
-    String? name = stdin.readLineSync()?.trim();
-    if (name == null || name.isEmpty) {
-      return askName(type);
-    }
-    return name;
-  }
-
-  String? _askVersion() {
-    print(blue('Please select the ignitr version to use: '));
-    for (int i = 0; i < templateVersions.length; i++) {
-      TemplateVersion templateVersion = templateVersions[i];
-      print('${i + 1}. ${templateVersion.version}');
-    }
-
-    // Prompt user for input
-    int selectedIndex = 0;
-    final input = ask(blue('Enter the number of your choice:'), required: false, validator: Ask.integer, defaultValue: '1');
-    final choice = int.tryParse(input);
-
-    if (choice != null && choice >= 1 && choice <= templateVersions.length) {
-      selectedIndex = choice - 1;
-    }
-
-    return templateVersions.elementAt(selectedIndex).version;
-  }
-
-  String? _askOrganization() {
-    return ask(blue('Enter the number of your choice:'), required: false, defaultValue: 'com.example');
   }
 }
