@@ -1,6 +1,6 @@
 name: ignitr_cli
-description: "A new Flutter package project."
-version: 0.0.1
+description: "A cli tool to work with Ignitr Project."
+version: 0.1.1
 homepage: https://github.com/thedevsbuddy/ignitr_cli
 
 environment:
@@ -23,7 +23,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-flutter:
+# flutter:
 
 executables:
   ignitr: main

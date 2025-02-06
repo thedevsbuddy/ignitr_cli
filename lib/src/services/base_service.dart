@@ -35,7 +35,7 @@ class BaseService {
 
   String? askVersion() {
     print(blue('Please select the ignitr version to use: '));
-    for (int i = 0; i < templateVersions.length; i++) {
+    for (int i = 0; i < templateVersions.take(5).toList().length; i++) {
       TemplateVersion templateVersion = templateVersions[i];
       print('${i + 1}. ${templateVersion.version}');
     }
@@ -98,11 +98,13 @@ class BaseService {
   Future<void> getTemplateVersions() async {
     final url = Uri.parse(Config.templateVersionsApi);
     final response = await http.get(url);
+    print(response.toString());
 
     if (response.statusCode == 200) {
       List<Map<String, dynamic>> releases = List<Map<String, dynamic>>.from(json.decode(response.body));
       templateVersions = List<TemplateVersion>.from(releases.map((release) => TemplateVersion.fromJson(release)));
     } else {
+      // print(response);
       print(red("Failed to fetch releases: ${response.statusCode}"));
     }
   }
