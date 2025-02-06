@@ -98,7 +98,6 @@ class BaseService {
   Future<void> getTemplateVersions() async {
     final url = Uri.parse(Config.templateVersionsApi);
     final response = await http.get(url);
-    print(response.toString());
 
     if (response.statusCode == 200) {
       List<Map<String, dynamic>> releases = List<Map<String, dynamic>>.from(json.decode(response.body));
