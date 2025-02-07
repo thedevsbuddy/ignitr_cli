@@ -20,7 +20,7 @@ class MakePageService extends BaseService {
   }
 
   Future<void> handle() async {
-    PageGenerator pageGenerator = PageGenerator(GeneratorTypes(module: moduleName, page: pageName));
+    PageGenerator pageGenerator = PageGenerator(GeneratorTypes(module: moduleName, page: pageName, controller: pageName));
     await pageGenerator.init();
     await pageGenerator.generate(true);
 
