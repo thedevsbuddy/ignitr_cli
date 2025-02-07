@@ -10,9 +10,6 @@ class PageGenerator extends BaseGenerator {
   PageGenerator(super.args);
 
   Future<void> generate([bool single = false]) async {
-    print(">>>> Generate pageName: ${args.page}");
-    print(">>>> Generate moduleName: ${args.module}");
-
     /// Validate arguments
     if (single) {
       if (!(_validateArgs(args))) return;
