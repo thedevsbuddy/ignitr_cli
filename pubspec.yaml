@@ -1,6 +1,6 @@
 name: ignitr_cli
 description: "A cli tool to work with Ignitr Project."
-version: 0.1.1
+version: 0.1.2
 homepage: https://github.com/thedevsbuddy/ignitr_cli
 
 environment:
