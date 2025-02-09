@@ -2,7 +2,7 @@
 
 import 'package:args/args.dart';
 import 'package:dcli/dcli.dart';
-import 'package:ignitr_cli/src/services/create_project_service.dart';
+import 'services/create_project_service.dart';
 
 import 'services/make_module_service.dart';
 import 'services/make_page_service.dart';

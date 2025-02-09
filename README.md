@@ -1,6 +1,6 @@
-# Ignitr
+# Ignitr CLI
 
-Ignitr is a simple yet powerful flutter mini framework, designed to simplify the development of Flutter applications. It provides a set of tools and utilities to streamline the process of building Flutter apps, making it easier for developers to create high-quality, feature-rich applications. Ignitr is designed to be flexible and customizable, allowing developers to tailor it to their specific needs. It is highly inpired by the other `MVC` framewords built with other technologies like [Laravel](https://laravel.com) and [CodeIgniter](https://www.codeigniter.com).
+Ignitr CLI is a command line interface (CLI) tool that helps you get started with Ignitr projects, a powerful and flexible Flutter project generator. With Ignitr CLI, you can easily create new Flutter projects, generate modules.
 
 ### Getting Started
 
@@ -10,50 +10,37 @@ dart pub global activate ignitr_cli
 
 ### Usage
 
-Above command will install the ignitr cli globally in your system, now you can use the built in Ignitr commands to get started with your project development.
+Above command will install the `ignitr_cli` globally in your system, now you can use the built in Ignitr commands to get started with your project's development.
 
-#### Create new Ignitr Project
+**NOTE: Sometimes ignitr command doesn't work after activating it globally specially when using Git Bash for windows, To solve this please use command as `ignitr.bat <commands>`, Alternatively you can add alias to your `.bashrc` file. To do so please run the following command in your (Git Bash) terminal: `echo alias ignitr=\"ignitr.bat\" >> ~/.bashrc`, If you use `.bash_profile` replace `.bashrc` with `.bash_profile`**
+
+### Available Commands
+
+Ignitr CLI provides a set of commands to help you generate modules and files for your Flutter projects. Here are some of the most commonly used commands:
+
+1. `ignitr create <project_name>`: This command will create a new Ignitr project with the specified name.
+2. `ignitr make:module <module_name>`: To generate a new module you can use this command, please make sure to use the **`singular`** name of the module.
+3. `ignitr make:page <page_name> --on=<module_name>`: This command will generate a new page and associated controller inside the specified module.
+
+#### Generate Ignitr Project
 
 ```shell
-ignitr create <project_name> --version=<ignitr_version>
+ignitr create <project_name>
 ```
 
-- _<project_name>_: This will be the project name you want to generate, it will scaffold a new fresh project with name name provided.
-- _<--version>_: This is optional option to select the Ignitr version to create project with, defaults to the `latest` version.
-
-**NOTE: Please note sometimes ignitr command doesn't work after activating it globally specially when using Git Bash for windows, To solve this please use command as `ignitr.bat <commands>`**
-
-### Features
-
-Here are some fantastic features you’ll get by default when scaffolding your project with this starter template:
-
-- **MVC Pattern**: The project follows the `MVC` pattern, which separates logic, UI, and models for better manageability. Additionally, a new service layer has been introduced to facilitate communication with APIs.
-- **Modular Structure**: The modular structure allows developers to reuse modules across different projects, offering greater flexibility and scalability.
-- **Module Generator**: A simple module generator tool has been added, enabling you to generate any module with a single command.
-- **Local File Database**: This project includes a local file database, allowing you to create a data file for each local service and use it to store data efficiently.
-
-## Other features
-
-### Module Generator
-
-Ignitr comes with the powerfull CLI tool to help you generate the modules.
-
-#### How to use
-
-1. `ignitr make:module <module_name>`: To generate a new module you can use this command, please make sure to use the **`singular`** name of the module.
-2. `ignitr make:page <page_name> --on=<module_name>`: This command will generate a new page and associated controller inside the specified module.
+This will generate all the files required for a `Ignitr` project.
 
 #### Generate Module
+
+After generating the project, you can generate a new module by running the following command in your project's root directory:
+
+_NOTE: Please make sure to use the module name as `singular` name_
 
 ```shell
 ignitr make:module blog
 ```
 
-_NOTE: Please make sure to use the module names as singular name_
-
-This will generate all the files required for a `Module`
-
-##### Generated Files Inside your project's `lib/app/modules` directory.
+This will generate all the files required for a `blog` module inside your project's `lib/app/modules` directory:
 
 ```txt
 📂 blog
@@ -72,13 +59,14 @@ This will generate all the files required for a `Module`
 
 #### Generate Page/View
 
+After generating the module, you can generate a new page/view by running the following command in your project's root directory:
+
 ```shell
 ignitr make:page comment --on=blog
 ```
 
 This will generate the new view/page (`comment_page.dart`) along with it's controller (`comment_controller.dart`) file inside the `blog` Module.
-
-##### Generated files (including previously generated views)
+If you dont pass the `--on` flag, it will ask you to enter the module name.
 
 ```txt
 📂 blog
@@ -93,8 +81,8 @@ This will generate the new view/page (`comment_page.dart`) along with it's contr
 ### Upcoming features
 
 - **Version Control**: The project will include a version control system, allowing you to rollback to the previous version of the project and more.
-- **Stack Selection**: You can select the stack you want to use, such as GetX, Bloc, or any other stack.
-- **Tailwind**: The project will include Tailwind CSS inspired styling library for styling, providing a modern, responsive and unique look and feel to your application.
+- **Stack Selection**: You can select the stack you want to use, such as GetX (MVCs), Bloc, Riverpod or MVVM, providing flexibility and customization options for your project.
+- **Tailwind**: The project will support Tailwind CSS like styling, enabling you to create responsive and visually appealing designs for your Flutter applications.
 
 ### Further Documentation
 

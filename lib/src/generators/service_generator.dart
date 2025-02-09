@@ -1,5 +1,5 @@
 import 'package:dcli/dcli.dart';
-import 'package:ignitr_cli/src/models/stub.dart';
+import '../models/stub.dart';
 
 import 'base_generator.dart';
 import '../utilities/utils.dart';

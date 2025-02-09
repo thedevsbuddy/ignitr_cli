@@ -3,3 +3,7 @@ include: package:flutter_lints/flutter.yaml
 analyzer:
   exclude:
     - template
+
+linter:
+  rules:
+    - prefer_relative_imports

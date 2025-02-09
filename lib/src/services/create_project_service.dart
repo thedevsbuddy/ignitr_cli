@@ -1,5 +1,5 @@
 import 'package:args/args.dart';
-import 'package:ignitr_cli/src/generators/stubs_generator.dart';
+import '../generators/stubs_generator.dart';
 
 import '../generators/project_generator.dart';
 import '../utilities/flavor.dart';
