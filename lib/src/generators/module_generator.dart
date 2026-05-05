@@ -52,6 +52,10 @@ class ModuleGenerator extends BaseGenerator {
     String moduleFile = stubs.firstWhere((item) => item.type == StubType.module).content.replaceAll('{SNAKE_MODULE}', commandInfo.moduleSnake);
     moduleFile = moduleFile.replaceAll('{MODULE}', commandInfo.modulePascal);
 
+    for (var entry in nameReplacements.entries) {
+      moduleFile = moduleFile.replaceAll(entry.key, entry.value);
+    }
+
     /// Write File
     Utils.writeFile("${commandInfo.modulePath}/${commandInfo.moduleSnake}.dart", moduleFile);
 

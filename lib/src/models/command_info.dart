@@ -10,7 +10,7 @@ class CommandInfo {
   final String? pageName;
 
   late final ReCase module;
-  late final ReCase project;
+  late ReCase project;
   late final ReCase page;
   late final ReCase controller;
 

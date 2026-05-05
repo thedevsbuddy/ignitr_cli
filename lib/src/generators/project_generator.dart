@@ -93,7 +93,8 @@ class ProjectGenerator extends BaseGenerator {
             entity.path.endsWith('.xml') ||
             entity.path.endsWith('.kt') ||
             entity.path.endsWith('.plist') ||
-            entity.path.endsWith('.gradle')) {
+            entity.path.endsWith('.gradle') ||
+            entity.path.endsWith('.json')) {
           String content = await entity.readAsString();
 
           for (var entry in nameReplacements.entries) {

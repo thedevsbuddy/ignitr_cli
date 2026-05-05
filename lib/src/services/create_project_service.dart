@@ -8,7 +8,6 @@ class CreateProjectService extends BaseService {
   String? projectName;
   String? projectVersion;
   String? organizationName;
-  String? selectedFlavorName;
   String? selectedStackName;
 
   @override

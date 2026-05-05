@@ -1,6 +1,8 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart';
+import 'package:recase/recase.dart';
 
 import '../models/command_info.dart';
 import '../models/stub.dart';
@@ -14,6 +16,16 @@ class BaseGenerator {
   CommandInfo commandInfo;
 
   BaseGenerator(this.commandInfo) {
+    File configFile = File('.ignitr/config.json');
+
+    if (configFile.existsSync()) {
+      Map<String, dynamic> ignitrConfig = jsonDecode(configFile.readAsStringSync());
+
+      if (ignitrConfig['project'] != null && commandInfo.project.originalText.isEmpty) {
+        commandInfo.project = ReCase(ignitrConfig['project']);
+      }
+    }
+
     nameReplacements = {
       'com.devsbuddy.ignitr_template': "${commandInfo.organization}.${commandInfo.projectSnake}",
       'ignitr_template': commandInfo.projectSnake,
