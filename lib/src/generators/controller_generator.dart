@@ -16,7 +16,11 @@ class ControllerGenerator extends BaseGenerator {
     }
 
     /// Get stub
-    String stub = single ? stubs.firstWhere((item) => item.type == StubType.singleController).content : stubs.firstWhere((item) => item.type == StubType.controller).content;
+    String stub = single
+        ? stubs
+            .firstWhere((item) => item.type == StubType.singleController)
+            .content
+        : stubs.firstWhere((item) => item.type == StubType.controller).content;
 
     /// Generate Controller
     Utils.makeDir(controllerPath);
@@ -31,7 +35,8 @@ class ControllerGenerator extends BaseGenerator {
     );
 
     /// Show Success message
-    print(green('"$controllerPath/${controllerName.snakeCase}_controller.dart" generated successfully.'));
+    print(green(
+        '"$controllerPath/${controllerName.snakeCase}_controller.dart" generated successfully.'));
 
     /// Update module export to add the new controller
     if (single) {
@@ -40,24 +45,24 @@ class ControllerGenerator extends BaseGenerator {
   }
 
   Future<void> updateModuleExport() async {
-    String exportFile = "controllers/${controllerName.snakeCase}_controller.dart";
+    String exportFile =
+        "controllers/${controllerName.snakeCase}_controller.dart";
     String moduleFilePath = "$modulePath/${moduleName.snakeCase}_module.dart";
     String moduleFileContent = await Utils.readFile(moduleFilePath);
     if (moduleFileContent.contains(exportFile)) {
       /// Show Success message
-      print(yellow('`export "${controllerName.snakeCase}_controller.dart"` already exists in $moduleFilePath'));
+      print(yellow(
+          '`export "${controllerName.snakeCase}_controller.dart"` already exists in $moduleFilePath'));
       return;
     }
-    moduleFileContent = """
-      $moduleFileContent
-      export '$exportFile';
-    """;
+    moduleFileContent = '$moduleFileContent\nexport \'$exportFile\';\n';
 
     /// Write File
     Utils.writeFile(moduleFilePath, moduleFileContent);
 
     /// Show Success message
-    print(green('Added `export "${controllerName.snakeCase}_controller.dart"` to `$moduleFilePath`'));
+    print(green(
+        'Added `export "${controllerName.snakeCase}_controller.dart"` to `$moduleFilePath`'));
   }
 
   bool _validateArgs(GeneratorTypes args) {

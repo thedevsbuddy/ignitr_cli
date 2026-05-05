@@ -4,7 +4,11 @@ class Flavor {
   final String downloadUrl;
   final String contentType;
 
-  Flavor({required this.name, required this.fileName, required this.downloadUrl, required this.contentType});
+  Flavor(
+      {required this.name,
+      required this.fileName,
+      required this.downloadUrl,
+      required this.contentType});
 
   factory Flavor.fromJson(Map<String, dynamic> json) {
     return Flavor(

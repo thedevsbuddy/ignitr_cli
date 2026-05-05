@@ -28,7 +28,8 @@ class CreateProjectService extends BaseService {
   }
 
   Future<void> handle() async {
-    Flavor selectedFlavor = availableFlavors.firstWhere((flavor) => flavor.name == "$selectedFlavorName-$selectedStackName");
+    Flavor selectedFlavor = availableFlavors.firstWhere(
+        (flavor) => flavor.name == "$selectedFlavorName-$selectedStackName");
 
     ProjectGenerator projectGenerator = ProjectGenerator(
       GeneratorTypes(
@@ -41,7 +42,10 @@ class CreateProjectService extends BaseService {
     await projectGenerator.generate();
 
     // Download stubs
-    String stubsUrl = availableStubs.firstWhere((stub) => stub.fileName == "$selectedFlavorName-$selectedStackName-stubs.zip").downloadUrl;
+    String stubsUrl = availableStubs
+        .firstWhere((stub) =>
+            stub.fileName == "$selectedFlavorName-$selectedStackName-stubs.zip")
+        .downloadUrl;
 
     StubsGenerator stubsGenerator = StubsGenerator(
       GeneratorTypes(

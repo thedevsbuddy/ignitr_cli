@@ -3,7 +3,10 @@ class TemplateVersion {
   final String versionName;
   final bool isPrerelease;
 
-  TemplateVersion({required this.version, required this.versionName, required this.isPrerelease});
+  TemplateVersion(
+      {required this.version,
+      required this.versionName,
+      required this.isPrerelease});
 
   factory TemplateVersion.fromJson(Map<String, dynamic> json) {
     return TemplateVersion(

@@ -28,14 +28,18 @@ class StubsGenerator extends BaseGenerator {
 
         // Validate and extract the ZIP file
         try {
-          final archive = ZipDecoder().decodeBytes(stubArchiveFile.readAsBytesSync());
+          final archive =
+              ZipDecoder().decodeBytes(stubArchiveFile.readAsBytesSync());
 
           // Extract ZIP contents, stripping the root directory
-          final rootDir = archive.firstWhere((file) => file.isFile).name.split('/')[0];
+          final rootDir =
+              archive.firstWhere((file) => file.isFile).name.split('/')[0];
 
           for (ArchiveFile file in archive) {
             // Remove the root directory prefix
-            final filePath = file.name.startsWith(rootDir) ? file.name.substring(rootDir.length + 1) : file.name;
+            final filePath = file.name.startsWith(rootDir)
+                ? file.name.substring(rootDir.length + 1)
+                : file.name;
 
             if (filePath.isEmpty) continue; // Skip the root directory itself
 
@@ -54,7 +58,8 @@ class StubsGenerator extends BaseGenerator {
           final stubsDir = Directory("$projectPath/.ignitr/stubs");
           final fromTemp = Directory(stubsTempPath);
           await _copyDownloadedStubs(fromTemp, stubsDir);
-          await Future.delayed(Duration(milliseconds: 1500), () => fromTemp.deleteSync(recursive: true));
+          await Future.delayed(Duration(milliseconds: 1500),
+              () => fromTemp.deleteSync(recursive: true));
           print(green('Project created successfully!'));
           print(blue('Create something awesome!'));
         }
@@ -66,7 +71,8 @@ class StubsGenerator extends BaseGenerator {
     }
   }
 
-  Future<void> _copyDownloadedStubs(Directory source, Directory destination) async {
+  Future<void> _copyDownloadedStubs(
+      Directory source, Directory destination) async {
     if (!source.existsSync()) {
       throw Exception('Source directory does not exist: ${source.path}');
     }

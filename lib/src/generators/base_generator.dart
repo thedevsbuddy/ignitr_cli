@@ -44,7 +44,7 @@ class BaseGenerator {
     pageName = ReCase(args.page ?? moduleName.originalText);
 
     modulesPath = "lib/app/modules";
-    modulePath = "$modulesPath/${moduleName.pascalCase}";
+    modulePath = "$modulesPath/${moduleName.snakeCase}";
     modelPath = "lib/app/models";
     baseRoutePath = "lib/routes";
     controllerPath = "$modulesPath/${moduleName.snakeCase}/controllers";
@@ -65,7 +65,8 @@ class BaseGenerator {
     organizationName = args.organization?.toLowerCase() ?? "com.example";
 
     nameReplacements = {
-      'com.devsbuddy.flutter_ignitr': "$organizationName.${projectName.snakeCase}",
+      'com.devsbuddy.flutter_ignitr':
+          "$organizationName.${projectName.snakeCase}",
       'flutter_ignitr': projectName.snakeCase,
       'Ignitr': projectName.titleCase,
     };
@@ -105,13 +106,15 @@ class BaseGenerator {
     } else {
       await for (var entity in stubDirectory.list(recursive: true)) {
         if (entity is File) {
-          String stubFile = entity.readAsStringSync();
-          String stubName = entity.path.split("/").last.split(".").first.replaceAll('/', "\\").split('\\').last;
+          final stubFile = await entity.readAsString();
+          final stubName = basenameWithoutExtension(entity.path);
           Stub stub = Stub(
             name: stubName,
-            type: StubType.values.firstWhere((element) => element.name == stubName, orElse: () => StubType.controller),
+            type: StubType.values.firstWhere(
+                (element) => element.name == stubName,
+                orElse: () => StubType.controller),
             content: stubFile,
-            outPath: entity.path.split("/").last.split(".").first,
+            outPath: stubName,
           );
           stubs.add(stub);
         }

@@ -25,74 +25,41 @@ class BaseService {
   }
 
   String? askName(String type) {
-    stdout.write(blue('Enter $type Name: '));
-    String? name = stdin.readLineSync()?.trim();
-    if (name == null || name.isEmpty) {
-      return askName(type);
+    while (true) {
+      stdout.write(blue('Enter $type Name: '));
+      final name = stdin.readLineSync()?.trim();
+      if (name != null && name.isNotEmpty) {
+        return name;
+      }
     }
-    return name;
   }
 
   String? askVersion() {
+    if (templateVersions.isEmpty) return version;
+
     print(blue('Please select the ignitr version to use: '));
-    for (int i = 0; i < templateVersions.take(5).toList().length; i++) {
-      TemplateVersion templateVersion = templateVersions[i];
+    final displayedVersions = templateVersions.take(5).toList();
+    for (int i = 0; i < displayedVersions.length; i++) {
+      final templateVersion = displayedVersions[i];
       print('${i + 1}. ${templateVersion.version}');
     }
 
-    // Prompt user for input
-    int selectedIndex = 0;
-    final input = ask(blue('Enter the number of your choice:'), required: false, validator: Ask.integer, defaultValue: '1');
-    final choice = int.tryParse(input);
-
-    if (choice != null && choice >= 1 && choice <= templateVersions.length) {
-      selectedIndex = choice - 1;
-    }
-
-    version = templateVersions.elementAt(selectedIndex).version;
+    final selectedIndex = _askChoiceIndex(displayedVersions.length);
+    version = displayedVersions[selectedIndex].version;
     return version;
   }
 
   String? askFlavor() {
-    print(blue('Please select flavor: '));
-    for (int i = 0; i < flavors.length; i++) {
-      Info flavor = flavors[i];
-      print('${i + 1}. ${flavor.name}');
-    }
-
-    // Prompt user for input
-    int selectedIndex = 0;
-    final input = ask(blue('Enter the number of your choice:'), required: false, validator: Ask.integer, defaultValue: '1');
-    final choice = int.tryParse(input);
-
-    if (choice != null && choice >= 1 && choice <= flavors.length) {
-      selectedIndex = choice - 1;
-    }
-
-    return flavors.elementAt(selectedIndex).value;
+    return _askInfoChoice('Please select flavor: ', flavors);
   }
 
   String? askStack() {
-    print(blue('Please select stack: '));
-    for (int i = 0; i < stacks.length; i++) {
-      Info stack = stacks[i];
-      print('${i + 1}. ${stack.name}');
-    }
-
-    // Prompt user for input
-    int selectedIndex = 0;
-    final input = ask(blue('Enter the number of your choice:'), required: false, validator: Ask.integer, defaultValue: '1');
-    final choice = int.tryParse(input);
-
-    if (choice != null && choice >= 1 && choice <= stacks.length) {
-      selectedIndex = choice - 1;
-    }
-
-    return stacks.elementAt(selectedIndex).value;
+    return _askInfoChoice('Please select stack: ', stacks);
   }
 
   String? askOrganization() {
-    return ask(blue('Enter organization name:'), required: false, defaultValue: 'com.example');
+    return ask(blue('Enter organization name:'),
+        required: false, defaultValue: 'com.example');
   }
 
   Future<void> getTemplateVersions() async {
@@ -100,10 +67,11 @@ class BaseService {
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
-      List<Map<String, dynamic>> releases = List<Map<String, dynamic>>.from(json.decode(response.body));
-      templateVersions = List<TemplateVersion>.from(releases.map((release) => TemplateVersion.fromJson(release)));
+      final releases =
+          List<Map<String, dynamic>>.from(json.decode(response.body));
+      templateVersions =
+          List<TemplateVersion>.from(releases.map(TemplateVersion.fromJson));
     } else {
-      // print(response);
       print(red("Failed to fetch releases: ${response.statusCode}"));
     }
   }
@@ -113,17 +81,17 @@ class BaseService {
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
-      List<Map<String, dynamic>> releases = List<Map<String, dynamic>>.from(json.decode(response.body)['assets']);
-      availableFlavors = List<Flavor>.from(releases.map((release) => Flavor.fromJson(release)));
+      final releases =
+          List<Map<String, dynamic>>.from(json.decode(response.body)['assets']);
+      availableFlavors = List<Flavor>.from(releases.map(Flavor.fromJson));
       _filterFlavors();
     } else {
       print(red("Failed to fetch releases: ${response.statusCode}"));
     }
   }
 
-  Future<void> _filterFlavors() async {
-    // Filter flavors
-    Set<String> uniqueFlavorNames = {};
+  void _filterFlavors() {
+    final uniqueFlavorNames = <String>{};
     flavors = availableFlavors
         .map(
           (item) => Flavor(
@@ -134,11 +102,11 @@ class BaseService {
           ),
         )
         .where((flavor) => uniqueFlavorNames.add(flavor.name))
-        .map((item) => Info(name: ReCase(item.name).titleCase, value: item.name.toLowerCase()))
+        .map((item) => Info(
+            name: ReCase(item.name).titleCase, value: item.name.toLowerCase()))
         .toList();
 
-    // Filter stacks
-    Set<String> uniquStackNames = {};
+    final uniqueStackNames = <String>{};
     stacks = availableFlavors
         .where((flavor) => !flavor.fileName.contains('-stub'))
         .map(
@@ -149,12 +117,12 @@ class BaseService {
             contentType: item.contentType,
           ),
         )
-        .where((flavor) => uniquStackNames.add(flavor.name))
-        .map((item) => Info(name: ReCase(item.name).titleCase, value: item.name.toLowerCase()))
+        .where((flavor) => uniqueStackNames.add(flavor.name))
+        .map((item) => Info(
+            name: ReCase(item.name).titleCase, value: item.name.toLowerCase()))
         .toList();
 
-    // Filter flavors
-    Set<String> uniqueStubNames = {};
+    final uniqueStubNames = <String>{};
     availableStubs = availableFlavors
         .where((flavor) => flavor.fileName.contains('-stub'))
         .map(
@@ -167,5 +135,32 @@ class BaseService {
         )
         .where((flavor) => uniqueStubNames.add(flavor.name))
         .toList();
+  }
+
+  String? _askInfoChoice(String prompt, List<Info> values) {
+    if (values.isEmpty) return null;
+
+    print(blue(prompt));
+    for (int i = 0; i < values.length; i++) {
+      final item = values[i];
+      print('${i + 1}. ${item.name}');
+    }
+
+    final selectedIndex = _askChoiceIndex(values.length);
+    return values[selectedIndex].value;
+  }
+
+  int _askChoiceIndex(int max) {
+    final input = ask(
+      blue('Enter the number of your choice:'),
+      required: false,
+      validator: Ask.integer,
+      defaultValue: '1',
+    );
+    final choice = int.tryParse(input);
+    if (choice != null && choice >= 1 && choice <= max) {
+      return choice - 1;
+    }
+    return 0;
   }
 }

@@ -49,14 +49,19 @@ class ModuleGenerator extends BaseGenerator {
     /// Check and create directory
     Utils.makeDir(modulePath);
 
-    String moduleFile = stubs.firstWhere((item) => item.type == StubType.module).content.replaceAll('{SNAKE_MODULE}', moduleName.snakeCase);
+    String moduleFile = stubs
+        .firstWhere((item) => item.type == StubType.module)
+        .content
+        .replaceAll('{SNAKE_MODULE}', moduleName.snakeCase);
     moduleFile = moduleFile.replaceAll('{MODULE}', moduleName.pascalCase);
 
     /// Write File
-    Utils.writeFile("$modulePath/${moduleName.snakeCase}_module.dart", moduleFile);
+    Utils.writeFile(
+        "$modulePath/${moduleName.snakeCase}_module.dart", moduleFile);
 
     /// Show Success message
-    print(green('"$modulePath/${moduleName.snakeCase}_module.dart" generated successfully!'));
+    print(green(
+        '"$modulePath/${moduleName.snakeCase}_module.dart" generated successfully!'));
   }
 
   Future<void> generateRoute() async {
@@ -64,22 +69,25 @@ class ModuleGenerator extends BaseGenerator {
     Utils.makeDir(routePath);
 
     /// Replace slots with actual value
-    String routeFile = parseStub(stubs.firstWhere((item) => item.type == StubType.router).content);
+    String routeFile = parseStub(
+        stubs.firstWhere((item) => item.type == StubType.router).content);
 
     /// Write File
-    Utils.writeFile("$routePath/${moduleName.snakeCase}_router.dart", routeFile);
+    Utils.writeFile(
+        "$routePath/${moduleName.snakeCase}_router.dart", routeFile);
 
     /// Show Success message
-    print(green('"$routePath/${moduleName.snakeCase}_router.dart" generated successfully!'));
+    print(green(
+        '"$routePath/${moduleName.snakeCase}_router.dart" generated successfully!'));
   }
 
   Future<void> updateRoutesExport() async {
-    String exportLine = """
-    /// ${moduleName.pascalCase} Routes
-    ...${moduleName.camelCase}Routes,
-
-    //%EDIT_CODE_ABOVE_THIS_LINE_AND_DONT_REMOVE_THIS_LINE%//
-  """;
+    String exportLine = [
+      '/// ${moduleName.pascalCase} Routes',
+      '...${moduleName.camelCase}Routes,',
+      '',
+      '//%EDIT_CODE_ABOVE_THIS_LINE_AND_DONT_REMOVE_THIS_LINE%//',
+    ].join('\n');
 
     String baseRouteFilePath = "$baseRoutePath/router.dart";
     String routeFileContent = await Utils.readFile(baseRouteFilePath);
@@ -89,13 +97,17 @@ class ModuleGenerator extends BaseGenerator {
       return;
     }
 
-    if (!routeFileContent.contains("//%EDIT_CODE_ABOVE_THIS_LINE_AND_DONT_REMOVE_THIS_LINE%//")) {
+    if (!routeFileContent.contains(
+        "//%EDIT_CODE_ABOVE_THIS_LINE_AND_DONT_REMOVE_THIS_LINE%//")) {
       print(yellow('Route export can not be added to `$baseRouteFilePath`'));
-      print(red('Please add: `//%EDIT_CODE_ABOVE_THIS_LINE_AND_DONT_REMOVE_THIS_LINE%//` in `$baseRouteFilePath`` before `];`'));
+      print(red(
+          'Please add: `//%EDIT_CODE_ABOVE_THIS_LINE_AND_DONT_REMOVE_THIS_LINE%//` in `$baseRouteFilePath`` before `];`'));
       return;
     }
 
-    routeFileContent = routeFileContent.replaceAll("//%EDIT_CODE_ABOVE_THIS_LINE_AND_DONT_REMOVE_THIS_LINE%//", exportLine);
+    routeFileContent = routeFileContent.replaceAll(
+        "//%EDIT_CODE_ABOVE_THIS_LINE_AND_DONT_REMOVE_THIS_LINE%//",
+        exportLine);
 
     /// Write File
     Utils.writeFile(baseRouteFilePath, routeFileContent);
@@ -105,23 +117,23 @@ class ModuleGenerator extends BaseGenerator {
   }
 
   Future<void> updateModuleExport() async {
-    String exportFile = "${moduleName.snakeCase}/${moduleName.snakeCase}_module.dart";
+    String exportFile =
+        "${moduleName.snakeCase}/${moduleName.snakeCase}_module.dart";
     String modulesFilePath = "$modulesPath/modules.dart";
     String modulesFileContent = await Utils.readFile(modulesFilePath);
     if (modulesFileContent.contains(exportFile)) {
       /// Show Success message
-      print(yellow('export "${moduleName.snakeCase}_module.dart" already exists in $modulesFilePath'));
+      print(yellow(
+          'export "${moduleName.snakeCase}_module.dart" already exists in $modulesFilePath'));
       return;
     }
-    modulesFileContent = """
-      $modulesFileContent
-      export '$exportFile';
-    """;
+    modulesFileContent = '$modulesFileContent\nexport \'$exportFile\';\n';
 
     /// Write File
     Utils.writeFile(modulesFilePath, modulesFileContent);
 
     /// Show Success message
-    print(green('Added `export "${moduleName.snakeCase}/${moduleName.snakeCase}_module.dart"` to `$modulesFilePath`'));
+    print(green(
+        'Added `export "${moduleName.snakeCase}/${moduleName.snakeCase}_module.dart"` to `$modulesFilePath`'));
   }
 }

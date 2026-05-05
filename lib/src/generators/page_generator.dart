@@ -16,7 +16,8 @@ class PageGenerator extends BaseGenerator {
     }
 
     /// Get stub
-    String stub = stubs.firstWhere((item) => item.type == StubType.page).content;
+    String stub =
+        stubs.firstWhere((item) => item.type == StubType.page).content;
 
     /// Generate Controller
     Utils.makeDir(pagePath);
@@ -31,7 +32,8 @@ class PageGenerator extends BaseGenerator {
     );
 
     /// Show Success message
-    print(green('"$pagePath/${pageName.snakeCase}_page.dart" generated successfully.'));
+    print(green(
+        '"$pagePath/${pageName.snakeCase}_page.dart" generated successfully.'));
 
     /// Update module export to add the new page
     if (single) {
@@ -45,26 +47,22 @@ class PageGenerator extends BaseGenerator {
     String moduleFileContent = await Utils.readFile(moduleFilePath);
     if (moduleFileContent.contains(exportFile)) {
       /// Show Success message
-      print(yellow('`export "${pageName.snakeCase}_page.dart"` already exists in $moduleFilePath'));
+      print(yellow(
+          '`export "${pageName.snakeCase}_page.dart"` already exists in $moduleFilePath'));
       return;
     }
 
-    moduleFileContent = """
-      $moduleFileContent
-      export '$exportFile';
-    """;
+    moduleFileContent = '$moduleFileContent\nexport \'$exportFile\';\n';
 
     /// Write File
     Utils.writeFile(moduleFilePath, moduleFileContent);
 
     /// Show Success message
-    print(green('Added `export "${controllerName.snakeCase}_page.dart"` to `$moduleFilePath`'));
+    print(green(
+        'Added `export "${pageName.snakeCase}_page.dart"` to `$moduleFilePath`'));
   }
 
   bool _validateArgs(GeneratorTypes args) {
-    print(">>>> Validate pageName: ${args.page}");
-    print(">>>> Validate moduleName: ${args.module}");
-
     /// Assign module name
     moduleName = ReCase(args.module ?? "");
 
@@ -74,9 +72,9 @@ class PageGenerator extends BaseGenerator {
 
     /// Assign variable values
     pageName = ReCase(args.page ?? "");
-    String? rawpageName = pageName.originalText;
-    rawpageName.toLowerCase().replaceAll('page', "");
-    pageName = ReCase(rawpageName);
+    final rawPageName =
+        pageName.originalText.toLowerCase().replaceAll('page', "").trim();
+    pageName = ReCase(rawPageName);
 
     return true;
   }

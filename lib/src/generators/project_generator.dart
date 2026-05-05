@@ -28,14 +28,18 @@ class ProjectGenerator extends BaseGenerator {
 
         // Validate and extract the ZIP file
         try {
-          final archive = ZipDecoder().decodeBytes(templateFile.readAsBytesSync());
+          final archive =
+              ZipDecoder().decodeBytes(templateFile.readAsBytesSync());
 
           // Extract ZIP contents, stripping the root directory
-          final rootDir = archive.firstWhere((file) => file.isFile).name.split('/')[0];
+          final rootDir =
+              archive.firstWhere((file) => file.isFile).name.split('/')[0];
 
           for (ArchiveFile file in archive) {
             // Remove the root directory prefix
-            final filePath = file.name.startsWith(rootDir) ? file.name.substring(rootDir.length + 1) : file.name;
+            final filePath = file.name.startsWith(rootDir)
+                ? file.name.substring(rootDir.length + 1)
+                : file.name;
 
             if (filePath.isEmpty) continue; // Skip the root directory itself
 
@@ -54,7 +58,8 @@ class ProjectGenerator extends BaseGenerator {
           final projectDir = Directory(projectPath);
           final fromTemp = Directory(projectTempPath);
           await _copyGeneratedProject(fromTemp, projectDir);
-          await Future.delayed(Duration(seconds: 1), () => fromTemp.deleteSync(recursive: true));
+          await Future.delayed(
+              Duration(seconds: 1), () => fromTemp.deleteSync(recursive: true));
         }
       } else {
         throw Exception('Failed to download ZIP: ${response.statusCode}');
@@ -64,7 +69,8 @@ class ProjectGenerator extends BaseGenerator {
     }
   }
 
-  Future<void> _copyGeneratedProject(Directory source, Directory destination) async {
+  Future<void> _copyGeneratedProject(
+      Directory source, Directory destination) async {
     if (!source.existsSync()) {
       throw Exception('Source directory does not exist: ${source.path}');
     }

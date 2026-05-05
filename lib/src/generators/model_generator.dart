@@ -17,13 +17,15 @@ class ModelGenerator extends BaseGenerator {
     Utils.makeDir(modelPath);
 
     /// Replace slots with actual value
-    String modelFile = parseStub(stubs.firstWhere((item) => item.type == StubType.model).content);
+    String modelFile = parseStub(
+        stubs.firstWhere((item) => item.type == StubType.model).content);
 
     /// Write File
     Utils.writeFile("$modelPath/${moduleName.snakeCase}_model.dart", modelFile);
 
     /// Show Success message
-    print(green('"$modelPath/${moduleName.snakeCase}_model.dart" generated successfully!'));
+    print(green(
+        '"$modelPath/${moduleName.snakeCase}_model.dart" generated successfully!'));
   }
 
   Future<void> updateModelsExport() async {
@@ -32,18 +34,17 @@ class ModelGenerator extends BaseGenerator {
     String modelsFileContent = await Utils.readFile(modelsFilePath);
     if (modelsFileContent.contains(exportFile)) {
       /// Show Success message
-      print(green('export "${moduleName.snakeCase}_model.dart" already exists in $modelsFilePath'));
+      print(green(
+          'export "${moduleName.snakeCase}_model.dart" already exists in $modelsFilePath'));
       return;
     }
-    modelsFileContent = """
-      $modelsFileContent
-      export '$exportFile';
-    """;
+    modelsFileContent = '$modelsFileContent\nexport \'$exportFile\';\n';
 
     /// Write File
     Utils.writeFile(modelsFilePath, modelsFileContent);
 
     /// Show Success message
-    print(green('export "${moduleName.snakeCase}_model.dart" added to $modelsFilePath'));
+    print(green(
+        'export "${moduleName.snakeCase}_model.dart" added to $modelsFilePath'));
   }
 }

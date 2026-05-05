@@ -15,7 +15,8 @@ class MakeModuleService extends BaseService {
   }
 
   Future<void> handle() async {
-    ModuleGenerator moduleGenerator = ModuleGenerator(GeneratorTypes(module: moduleName));
+    ModuleGenerator moduleGenerator =
+        ModuleGenerator(GeneratorTypes(module: moduleName));
     await moduleGenerator.init();
     await moduleGenerator.generate();
   }
