@@ -22,7 +22,7 @@ Ignitr CLI provides a set of commands to help you generate modules and files for
 2. `ignitr make:module <module_name>`: To generate a new module you can use this command, please make sure to use the **`singular`** name of the module.
 3. `ignitr make:page <page_name> --on=<module_name>`: This command will generate a new page and associated controller inside the specified module.
 
-#### Generate Ignitr Project
+### Generate Ignitr Project
 
 ```shell
 ignitr create <project_name>
@@ -30,7 +30,7 @@ ignitr create <project_name>
 
 This will generate all the files required for a `Ignitr` project.
 
-#### Generate Module
+### Generate Module
 
 After generating the project, you can generate a new module by running the following command in your project's root directory:
 
@@ -40,7 +40,11 @@ _NOTE: Please make sure to use the module name as `singular` name_
 ignitr make:module blog
 ```
 
-This will generate all the files required for a `blog` module inside your project's `lib/app/modules` directory:
+_NOTE: Make sure to use the module names as singular name_
+
+This will generate all the files required for a `Module`
+
+#### Generated Files
 
 ```txt
 📂 blog
@@ -48,25 +52,23 @@ This will generate all the files required for a `blog` module inside your projec
 │   └── 📄 blog_controller.dart
 ├── 📂 routes
 │   ├── 📄 blog_router.dart
-├── 📂 services
-│   ├── 📄 api_blog_service.dart
-│   ├── 📄 blog_service.dart
-│   └── 📄 local_blog_service.dart
+├── 📂 networds
+│   ├── 📄 api_blog_client.dart
+│   └── 📄 blog_client.dart
 ├── 📂 views
 │   └── 📄 blog_page.dart
 └── 📄 blog_module.dart
 ```
 
-#### Generate Page/View
-
-After generating the module, you can generate a new page/view by running the following command in your project's root directory:
+### Generate Page/View
 
 ```shell
 ignitr make:page comment --on=blog
 ```
 
 This will generate the new view/page (`comment_page.dart`) along with it's controller (`comment_controller.dart`) file inside the `blog` Module.
-If you dont pass the `--on` flag, it will ask you to enter the module name.
+
+##### Generated files (including previously generated views)
 
 ```txt
 📂 blog
@@ -80,9 +82,8 @@ If you dont pass the `--on` flag, it will ask you to enter the module name.
 
 ### Upcoming features
 
-- **Version Control**: The project will include a version control system, allowing you to rollback to the previous version of the project and more.
-- **Stack Selection**: You can select the stack you want to use, such as GetX (MVCs), Bloc, Riverpod or MVVM, providing flexibility and customization options for your project.
-- **Tailwind**: The project will support Tailwind CSS like styling, enabling you to create responsive and visually appealing designs for your Flutter applications.
+- **Stack Selection**: You can select the stack you want to use, such as GetX, Bloc or any other stack.
+- **Tailwind**: The project will include Tailwind CSS inspired styling library for styling, providing a modern, responsive and unique look and feel to your application.
 
 ### Further Documentation
 
