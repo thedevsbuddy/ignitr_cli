@@ -58,11 +58,7 @@ class Utils {
 
   /// Convert String to [kebab-case]
   static String kebab(String text) {
-    return text
-        .trim()
-        .split(' ')
-        .map((element) => element.toLowerCase())
-        .join('-');
+    return text.trim().split(' ').map((element) => element.toLowerCase()).join('-');
   }
 
   /// Convert String to [snake_case]
@@ -83,8 +79,7 @@ class Utils {
         if (result.exitCode == 0) {
           print(blue(result.stdout));
         } else {
-          print(red(
-              'Command failed with error code ${result.exitCode}: ${result.stderr}'));
+          print(red('Command failed with error code ${result.exitCode}: ${result.stderr}'));
         }
       }
     } catch (e) {

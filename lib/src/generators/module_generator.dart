@@ -1,29 +1,29 @@
 import 'package:dcli/dcli.dart';
 
 import '../models/stub.dart';
+import '../utilities/utils.dart';
 import 'base_generator.dart';
+import 'client_generator.dart';
 import 'controller_generator.dart';
 import 'model_generator.dart';
 import 'page_generator.dart';
-import 'service_generator.dart';
-import '../utilities/utils.dart';
 
 class ModuleGenerator extends BaseGenerator {
-  ModuleGenerator(super.args);
+  ModuleGenerator(super.commandInfo);
 
   Future<void> generate() async {
     // Controller
-    ControllerGenerator controllerGenerator = ControllerGenerator(args);
+    ControllerGenerator controllerGenerator = ControllerGenerator(commandInfo);
     await controllerGenerator.init();
     await controllerGenerator.generate();
 
     // Service
-    ServiceGenerator serviceGenerator = ServiceGenerator(args);
-    await serviceGenerator.init();
-    await serviceGenerator.generate();
+    ClientGenerator clientGenerator = ClientGenerator(commandInfo);
+    await clientGenerator.init();
+    await clientGenerator.generate();
 
     // Page
-    PageGenerator pageGenerator = PageGenerator(args);
+    PageGenerator pageGenerator = PageGenerator(commandInfo);
     await pageGenerator.init();
     await pageGenerator.generate();
 
@@ -34,7 +34,7 @@ class ModuleGenerator extends BaseGenerator {
     await generateModuleClass();
 
     // Page
-    ModelGenerator modelGenerator = ModelGenerator(args);
+    ModelGenerator modelGenerator = ModelGenerator(commandInfo);
     await modelGenerator.init();
     await modelGenerator.generate();
 
@@ -47,67 +47,53 @@ class ModuleGenerator extends BaseGenerator {
 
   Future<void> generateModuleClass() async {
     /// Check and create directory
-    Utils.makeDir(modulePath);
+    Utils.makeDir(commandInfo.modulePath);
 
-    String moduleFile = stubs
-        .firstWhere((item) => item.type == StubType.module)
-        .content
-        .replaceAll('{SNAKE_MODULE}', moduleName.snakeCase);
-    moduleFile = moduleFile.replaceAll('{MODULE}', moduleName.pascalCase);
+    String moduleFile = stubs.firstWhere((item) => item.type == StubType.module).content.replaceAll('{SNAKE_MODULE}', commandInfo.moduleSnake);
+    moduleFile = moduleFile.replaceAll('{MODULE}', commandInfo.modulePascal);
 
     /// Write File
-    Utils.writeFile(
-        "$modulePath/${moduleName.snakeCase}_module.dart", moduleFile);
+    Utils.writeFile("${commandInfo.modulePath}/${commandInfo.moduleSnake}.dart", moduleFile);
 
     /// Show Success message
-    print(green(
-        '"$modulePath/${moduleName.snakeCase}_module.dart" generated successfully!'));
+    print(green('"${commandInfo.modulePath}/${commandInfo.moduleSnake}.dart" generated successfully!'));
   }
 
   Future<void> generateRoute() async {
     /// Check and create directory
-    Utils.makeDir(routePath);
+    Utils.makeDir(commandInfo.routePath);
 
     /// Replace slots with actual value
-    String routeFile = parseStub(
-        stubs.firstWhere((item) => item.type == StubType.router).content);
+    String routeFile = parseStub(stubs.firstWhere((item) => item.type == StubType.router).content);
 
     /// Write File
-    Utils.writeFile(
-        "$routePath/${moduleName.snakeCase}_router.dart", routeFile);
+    Utils.writeFile("${commandInfo.routePath}/${commandInfo.moduleSnake}_router.dart", routeFile);
 
     /// Show Success message
-    print(green(
-        '"$routePath/${moduleName.snakeCase}_router.dart" generated successfully!'));
+    print(green('"${commandInfo.routePath}/${commandInfo.moduleSnake}_router.dart" generated successfully!'));
   }
 
   Future<void> updateRoutesExport() async {
     String exportLine = [
-      '/// ${moduleName.pascalCase} Routes',
-      '...${moduleName.camelCase}Routes,',
-      '',
-      '//%EDIT_CODE_ABOVE_THIS_LINE_AND_DONT_REMOVE_THIS_LINE%//',
-    ].join('\n');
+      "...${commandInfo.modulePascal}Router.routes,",
+      "//%...routes%//",
+    ].join('\n\t');
 
-    String baseRouteFilePath = "$baseRoutePath/router.dart";
+    String baseRouteFilePath = "${commandInfo.baseRoutePath}/router.dart";
     String routeFileContent = await Utils.readFile(baseRouteFilePath);
 
-    if (routeFileContent.contains("...${moduleName.camelCase}Routes,")) {
+    if (routeFileContent.contains("...${commandInfo.modulePascal}Router.routes,")) {
       print(yellow('Route export arleady exists in $baseRouteFilePath'));
       return;
     }
 
-    if (!routeFileContent.contains(
-        "//%EDIT_CODE_ABOVE_THIS_LINE_AND_DONT_REMOVE_THIS_LINE%//")) {
+    if (!routeFileContent.contains("//%...routes%//")) {
       print(yellow('Route export can not be added to `$baseRouteFilePath`'));
-      print(red(
-          'Please add: `//%EDIT_CODE_ABOVE_THIS_LINE_AND_DONT_REMOVE_THIS_LINE%//` in `$baseRouteFilePath`` before `];`'));
+      print(red('Please add: `//%...routes%//` in `$baseRouteFilePath`` before `];`'));
       return;
     }
 
-    routeFileContent = routeFileContent.replaceAll(
-        "//%EDIT_CODE_ABOVE_THIS_LINE_AND_DONT_REMOVE_THIS_LINE%//",
-        exportLine);
+    routeFileContent = routeFileContent.replaceAll("//%...routes%//", exportLine);
 
     /// Write File
     Utils.writeFile(baseRouteFilePath, routeFileContent);
@@ -117,23 +103,21 @@ class ModuleGenerator extends BaseGenerator {
   }
 
   Future<void> updateModuleExport() async {
-    String exportFile =
-        "${moduleName.snakeCase}/${moduleName.snakeCase}_module.dart";
-    String modulesFilePath = "$modulesPath/modules.dart";
+    String exportFile = "${commandInfo.moduleSnake}/${commandInfo.moduleSnake}.dart";
+    String modulesFilePath = "${commandInfo.modulesPath}/modules.dart";
     String modulesFileContent = await Utils.readFile(modulesFilePath);
+
     if (modulesFileContent.contains(exportFile)) {
       /// Show Success message
-      print(yellow(
-          'export "${moduleName.snakeCase}_module.dart" already exists in $modulesFilePath'));
+      print(yellow('export "$exportFile" already exists in $modulesFilePath'));
       return;
     }
-    modulesFileContent = '$modulesFileContent\nexport \'$exportFile\';\n';
+    modulesFileContent = "$modulesFileContent\nexport \"$exportFile\";\n";
 
     /// Write File
     Utils.writeFile(modulesFilePath, modulesFileContent);
 
     /// Show Success message
-    print(green(
-        'Added `export "${moduleName.snakeCase}/${moduleName.snakeCase}_module.dart"` to `$modulesFilePath`'));
+    print(green('Added `export "$exportFile"` to `$modulesFilePath`'));
   }
 }

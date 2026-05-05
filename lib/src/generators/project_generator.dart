@@ -5,45 +5,42 @@ import 'package:dcli/dcli.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 
+import '../ignitr.config.dart';
 import 'base_generator.dart';
 
 class ProjectGenerator extends BaseGenerator {
-  ProjectGenerator(super.args);
+  ProjectGenerator(super.commandInfo);
 
   Future<void> generate() async {
-    print(blue('Creating project: ${projectName.snakeCase}'));
+    print(blue('Creating project: ${commandInfo.projectSnake}'));
     await _downloadProjectTemplate();
   }
 
   Future<void> _downloadProjectTemplate() async {
     try {
-      Directory(projectTempPath).createSync(recursive: true);
+      Directory(commandInfo.projectTempPath).createSync(recursive: true);
       // Download the ZIP file
-      final response = await http.get(Uri.parse(templateUrl));
+      final response = await http.get(Uri.parse(Config.templateUrl));
 
       if (response.statusCode == 200 && response.bodyBytes.isNotEmpty) {
         // Write ZIP to a temporary file
-        final templateFile = File('$projectTempPath/repo.zip');
+        final templateFile = File('${commandInfo.projectTempPath}/repo.zip');
         await templateFile.writeAsBytes(response.bodyBytes);
 
         // Validate and extract the ZIP file
         try {
-          final archive =
-              ZipDecoder().decodeBytes(templateFile.readAsBytesSync());
+          final archive = ZipDecoder().decodeBytes(templateFile.readAsBytesSync());
 
           // Extract ZIP contents, stripping the root directory
-          final rootDir =
-              archive.firstWhere((file) => file.isFile).name.split('/')[0];
+          final rootDir = archive.firstWhere((file) => file.isFile).name.split('/')[0];
 
           for (ArchiveFile file in archive) {
             // Remove the root directory prefix
-            final filePath = file.name.startsWith(rootDir)
-                ? file.name.substring(rootDir.length + 1)
-                : file.name;
+            final filePath = file.name.startsWith(rootDir) ? file.name.substring(rootDir.length + 1) : file.name;
 
             if (filePath.isEmpty) continue; // Skip the root directory itself
 
-            final targetPath = '$projectTempPath/$filePath';
+            final targetPath = '${commandInfo.projectTempPath}/$filePath';
             if (file.isFile) {
               File(targetPath)
                 ..createSync(recursive: true)
@@ -55,11 +52,10 @@ class ProjectGenerator extends BaseGenerator {
         } catch (e) {
           throw Exception('Invalid ZIP file: $e');
         } finally {
-          final projectDir = Directory(projectPath);
-          final fromTemp = Directory(projectTempPath);
+          final projectDir = Directory(commandInfo.projectPath);
+          final fromTemp = Directory(commandInfo.projectTempPath);
           await _copyGeneratedProject(fromTemp, projectDir);
-          await Future.delayed(
-              Duration(seconds: 1), () => fromTemp.deleteSync(recursive: true));
+          await Future.delayed(Duration(seconds: 1), () => fromTemp.deleteSync(recursive: true));
         }
       } else {
         throw Exception('Failed to download ZIP: ${response.statusCode}');
@@ -69,8 +65,7 @@ class ProjectGenerator extends BaseGenerator {
     }
   }
 
-  Future<void> _copyGeneratedProject(
-      Directory source, Directory destination) async {
+  Future<void> _copyGeneratedProject(Directory source, Directory destination) async {
     if (!source.existsSync()) {
       throw Exception('Source directory does not exist: ${source.path}');
     }

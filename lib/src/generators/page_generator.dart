@@ -1,39 +1,30 @@
 import 'package:dcli/dcli.dart';
-import 'package:recase/recase.dart';
 
 import '../models/stub.dart';
 import 'base_generator.dart';
-import '../utilities/generator_types.dart';
 import '../utilities/utils.dart';
 
 class PageGenerator extends BaseGenerator {
-  PageGenerator(super.args);
+  PageGenerator(super.commandInfo);
 
   Future<void> generate([bool single = false]) async {
-    /// Validate arguments
-    if (single) {
-      if (!(_validateArgs(args))) return;
-    }
-
     /// Get stub
-    String stub =
-        stubs.firstWhere((item) => item.type == StubType.page).content;
+    String stub = stubs.firstWhere((item) => item.type == StubType.page).content;
 
     /// Generate Controller
-    Utils.makeDir(pagePath);
+    Utils.makeDir(commandInfo.pagePath);
 
     /// Replace slots with actual value
     String viewFile = parseStub(stub);
 
     /// Write File
     Utils.writeFile(
-      "$pagePath/${pageName.snakeCase}_page.dart",
+      "${commandInfo.pagePath}/${commandInfo.pageSnake}.dart",
       viewFile,
     );
 
     /// Show Success message
-    print(green(
-        '"$pagePath/${pageName.snakeCase}_page.dart" generated successfully.'));
+    print(green('"${commandInfo.pagePath}/${commandInfo.pageSnake}.dart" generated successfully.'));
 
     /// Update module export to add the new page
     if (single) {
@@ -42,40 +33,21 @@ class PageGenerator extends BaseGenerator {
   }
 
   Future<void> updateModuleExport() async {
-    String exportFile = "views/${pageName.snakeCase}_page.dart";
-    String moduleFilePath = "$modulePath/${moduleName.snakeCase}_module.dart";
+    String exportFile = "views/${commandInfo.pageSnake}.dart";
+    String moduleFilePath = "${commandInfo.modulePath}/${commandInfo.moduleSnake}.dart";
     String moduleFileContent = await Utils.readFile(moduleFilePath);
     if (moduleFileContent.contains(exportFile)) {
       /// Show Success message
-      print(yellow(
-          '`export "${pageName.snakeCase}_page.dart"` already exists in $moduleFilePath'));
+      print(yellow('`part "${commandInfo.pageSnake}.dart"` already exists in $moduleFilePath'));
       return;
     }
 
-    moduleFileContent = '$moduleFileContent\nexport \'$exportFile\';\n';
+    moduleFileContent = "$moduleFileContent\npart \"$exportFile\";\n";
 
     /// Write File
     Utils.writeFile(moduleFilePath, moduleFileContent);
 
     /// Show Success message
-    print(green(
-        'Added `export "${pageName.snakeCase}_page.dart"` to `$moduleFilePath`'));
-  }
-
-  bool _validateArgs(GeneratorTypes args) {
-    /// Assign module name
-    moduleName = ReCase(args.module ?? "");
-
-    // Assign view path for the module
-    pagePath = "lib/app/modules/${moduleName.snakeCase}/views";
-    modulePath = "lib/app/modules/${moduleName.snakeCase}";
-
-    /// Assign variable values
-    pageName = ReCase(args.page ?? "");
-    final rawPageName =
-        pageName.originalText.toLowerCase().replaceAll('page', "").trim();
-    pageName = ReCase(rawPageName);
-
-    return true;
+    print(green('Added `part "${commandInfo.pageSnake}.dart"` to `$moduleFilePath`'));
   }
 }

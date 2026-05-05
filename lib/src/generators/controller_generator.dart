@@ -1,42 +1,30 @@
 import 'package:dcli/dcli.dart';
-import 'package:recase/recase.dart';
 
 import '../models/stub.dart';
 import 'base_generator.dart';
-import '../utilities/generator_types.dart';
 import '../utilities/utils.dart';
 
 class ControllerGenerator extends BaseGenerator {
-  ControllerGenerator(super.args);
+  ControllerGenerator(super.commandInfo);
 
   Future<void> generate([bool single = false]) async {
-    /// Validate arguments
-    if (single) {
-      if (!_validateArgs(args)) return;
-    }
-
     /// Get stub
-    String stub = single
-        ? stubs
-            .firstWhere((item) => item.type == StubType.singleController)
-            .content
-        : stubs.firstWhere((item) => item.type == StubType.controller).content;
+    String stub = single ? stubs.firstWhere((item) => item.type == StubType.singleController).content : stubs.firstWhere((item) => item.type == StubType.controller).content;
 
     /// Generate Controller
-    Utils.makeDir(controllerPath);
+    Utils.makeDir(commandInfo.controllerPath);
 
     /// Replace slots with actual value
-    String controllerFile = parseStub(stub);
+    String controllerFileContent = parseStub(stub);
 
     /// Write File
     Utils.writeFile(
-      "$controllerPath/${controllerName.snakeCase}_controller.dart",
-      controllerFile,
+      "${commandInfo.controllerPath}/${commandInfo.controllerSnake}.dart",
+      controllerFileContent,
     );
 
     /// Show Success message
-    print(green(
-        '"$controllerPath/${controllerName.snakeCase}_controller.dart" generated successfully.'));
+    print(green('"${commandInfo.controllerPath}/${commandInfo.controllerSnake}.dart" generated successfully.'));
 
     /// Update module export to add the new controller
     if (single) {
@@ -45,37 +33,20 @@ class ControllerGenerator extends BaseGenerator {
   }
 
   Future<void> updateModuleExport() async {
-    String exportFile =
-        "controllers/${controllerName.snakeCase}_controller.dart";
-    String moduleFilePath = "$modulePath/${moduleName.snakeCase}_module.dart";
+    String exportFile = "controllers/${commandInfo.controllerSnake}.dart";
+    String moduleFilePath = "${commandInfo.modulePath}/${commandInfo.moduleSnake}.dart";
     String moduleFileContent = await Utils.readFile(moduleFilePath);
+
     if (moduleFileContent.contains(exportFile)) {
-      /// Show Success message
-      print(yellow(
-          '`export "${controllerName.snakeCase}_controller.dart"` already exists in $moduleFilePath'));
+      print(yellow('`part "controllers/${commandInfo.controllerSnake}.dart"` already exists in $moduleFilePath'));
       return;
     }
-    moduleFileContent = '$moduleFileContent\nexport \'$exportFile\';\n';
+    moduleFileContent = "$moduleFileContent\npart \"$exportFile\";\n";
 
     /// Write File
     Utils.writeFile(moduleFilePath, moduleFileContent);
 
     /// Show Success message
-    print(green(
-        'Added `export "${controllerName.snakeCase}_controller.dart"` to `$moduleFilePath`'));
-  }
-
-  bool _validateArgs(GeneratorTypes args) {
-    /// Assign module name
-    moduleName = ReCase(args.module ?? "");
-
-    // Assign controller path for the module
-    controllerPath = "lib/app/modules/${moduleName.snakeCase}/controllers";
-    modulePath = "lib/app/modules/${moduleName.snakeCase}";
-
-    /// Assign variable values
-    controllerName = ReCase(args.controller ?? "");
-
-    return true;
+    print(green('Added `export "${commandInfo.moduleSnake}_controller.dart"` to `$moduleFilePath`'));
   }
 }

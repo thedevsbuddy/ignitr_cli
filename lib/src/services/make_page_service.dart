@@ -2,7 +2,7 @@ import 'package:args/args.dart';
 
 import '../generators/controller_generator.dart';
 import '../generators/page_generator.dart';
-import '../utilities/generator_types.dart';
+import '../models/command_info.dart';
 import 'base_service.dart';
 
 class MakePageService extends BaseService {
@@ -17,16 +17,16 @@ class MakePageService extends BaseService {
     moduleName ??= askName("Module");
 
     await super.init(args, argResults);
+
+    commandInfo = CommandInfo(rawModuleName: moduleName, pageName: pageName);
   }
 
   Future<void> handle() async {
-    PageGenerator pageGenerator = PageGenerator(GeneratorTypes(
-        module: moduleName, page: pageName, controller: pageName));
+    PageGenerator pageGenerator = PageGenerator(commandInfo);
     await pageGenerator.init();
     await pageGenerator.generate(true);
 
-    ControllerGenerator controllerGenerator = ControllerGenerator(
-        GeneratorTypes(module: moduleName, controller: pageName));
+    ControllerGenerator controllerGenerator = ControllerGenerator(commandInfo);
     await controllerGenerator.init();
     await controllerGenerator.generate(true);
   }

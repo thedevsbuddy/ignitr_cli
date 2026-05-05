@@ -1,11 +1,9 @@
 import 'dart:io';
 
 import 'package:path/path.dart';
-import 'package:recase/recase.dart';
 
-import '../ignitr.config.dart';
+import '../models/command_info.dart';
 import '../models/stub.dart';
-import '../utilities/generator_types.dart';
 import '../utilities/utils.dart';
 
 class BaseGenerator {
@@ -13,90 +11,36 @@ class BaseGenerator {
   Map<String, String> nameReplacements = {};
   List<Stub> stubs = [];
 
-  GeneratorTypes args = GeneratorTypes();
+  CommandInfo commandInfo;
 
-  /// ReCase properties
-  ReCase moduleName = ReCase("");
-  ReCase controllerName = ReCase("");
-  ReCase pageName = ReCase("");
-  ReCase projectName = ReCase("");
-
-  /// String properties
-  String modulePath = "";
-  String modulesPath = "";
-  String modelPath = "";
-  String controllerPath = "";
-  String servicePath = "";
-  String pagePath = "";
-  String routePath = "";
-  String baseRoutePath = "";
-  String templateUrl = "";
-  String projectTempPath = "";
-  String projectPath = "";
-  String organizationName = "";
-  String flavor = "";
-
-  BaseGenerator(this.args) {
-    moduleName = ReCase(args.module ?? "");
-    moduleName = ReCase(Utils.singularize(moduleName.originalText));
-
-    controllerName = ReCase(args.controller ?? moduleName.originalText);
-    pageName = ReCase(args.page ?? moduleName.originalText);
-
-    modulesPath = "lib/app/modules";
-    modulePath = "$modulesPath/${moduleName.snakeCase}";
-    modelPath = "lib/app/models";
-    baseRoutePath = "lib/routes";
-    controllerPath = "$modulesPath/${moduleName.snakeCase}/controllers";
-    servicePath = "$modulesPath/${moduleName.snakeCase}/services";
-    pagePath = "$modulesPath/${moduleName.snakeCase}/views";
-    routePath = "$modulesPath/${moduleName.snakeCase}/routes";
-
-    projectName = ReCase(args.project ?? "");
-    projectPath = projectName.snakeCase;
-    projectTempPath = join(projectPath, "temp");
-    flavor = args.flavor ?? "pocketbase";
-    if (Config.inDevMode) {
-      templateUrl = Config.devProjectTemplateUrl;
-    } else {
-      templateUrl = args.templateUrl ?? Config.devProjectTemplateUrl;
-    }
-
-    organizationName = args.organization?.toLowerCase() ?? "com.example";
-
+  BaseGenerator(this.commandInfo) {
     nameReplacements = {
-      'com.devsbuddy.flutter_ignitr':
-          "$organizationName.${projectName.snakeCase}",
-      'flutter_ignitr': projectName.snakeCase,
-      'Ignitr': projectName.titleCase,
+      'com.devsbuddy.ignitr_template': "${commandInfo.organization}.${commandInfo.projectSnake}",
+      'ignitr_template': commandInfo.projectSnake,
+      'Ignitr': commandInfo.projectTitle,
     };
   }
 
   Future<void> init() async {
-    /// Load all stubs
     await _loadStubs();
   }
 
-  String parseStub(String stub) {
+  String parseStub(String content) {
     stubReplacements = {
-      '{CONTROLLER}': controllerName.pascalCase,
-      '{SNAKE_CONTROLLER}': controllerName.snakeCase,
-      '{MODULE}': moduleName.pascalCase,
-      '{MODULE_SINGULAR}': Utils.singularize(moduleName.pascalCase),
-      '{MODEL}': Utils.singularize(moduleName.pascalCase),
-      '{CAMEL_MODULE}': moduleName.camelCase,
-      '{SNAKE_MODULE}': moduleName.snakeCase,
-      '{PLURAL_MODULE}': Utils.pluralize(moduleName.snakeCase),
-      '{MODULE_URL}': moduleName.paramCase,
-      '{MODULE_URL_CAMEL}': moduleName.camelCase,
-      '{PAGE}': pageName.pascalCase,
+      '{MODULE}': Utils.singularize(commandInfo.modulePascal),
+      '{CAMEL_MODULE}': commandInfo.moduleCamel,
+      '{SNAKE_MODULE}': commandInfo.moduleSnake,
+      '{PLURAL_MODULE}': Utils.pluralize(commandInfo.moduleSnake),
+      '{MODULE_URL}': commandInfo.moduleParam,
+      '{MODEL_CLASS}': commandInfo.modelClass,
+      '{PAGE_CLASS}': commandInfo.pageClass,
+      '{CONTROLLER_CLASS}': commandInfo.controllerClass,
     };
 
-    String file = stub;
     for (String key in stubReplacements.keys) {
-      file = file.replaceAll(key, stubReplacements[key]!);
+      content = content.replaceAll(key, stubReplacements[key]!);
     }
-    return file;
+    return content;
   }
 
   Future<void> _loadStubs() async {
@@ -106,16 +50,14 @@ class BaseGenerator {
     } else {
       await for (var entity in stubDirectory.list(recursive: true)) {
         if (entity is File) {
-          final stubFile = await entity.readAsString();
+          final stubContent = await entity.readAsString();
           final stubName = basenameWithoutExtension(entity.path);
           Stub stub = Stub(
             name: stubName,
-            type: StubType.values.firstWhere(
-                (element) => element.name == stubName,
-                orElse: () => StubType.controller),
-            content: stubFile,
-            outPath: stubName,
+            type: StubType.values.firstWhere((element) => element.name == stubName),
+            content: stubContent,
           );
+
           stubs.add(stub);
         }
       }

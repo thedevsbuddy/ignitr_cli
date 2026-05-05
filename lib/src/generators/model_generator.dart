@@ -5,7 +5,7 @@ import 'base_generator.dart';
 import '../utilities/utils.dart';
 
 class ModelGenerator extends BaseGenerator {
-  ModelGenerator(super.args);
+  ModelGenerator(super.commandInfo);
 
   Future<void> generate() async {
     await generateModel();
@@ -14,37 +14,34 @@ class ModelGenerator extends BaseGenerator {
 
   Future<void> generateModel() async {
     /// Check and create directory
-    Utils.makeDir(modelPath);
+    Utils.makeDir(commandInfo.modelPath);
 
     /// Replace slots with actual value
-    String modelFile = parseStub(
-        stubs.firstWhere((item) => item.type == StubType.model).content);
+    String modelFile = parseStub(stubs.firstWhere((item) => item.type == StubType.model).content);
 
     /// Write File
-    Utils.writeFile("$modelPath/${moduleName.snakeCase}_model.dart", modelFile);
+    Utils.writeFile("${commandInfo.modelPath}/${commandInfo.moduleSnake}_model.dart", modelFile);
 
     /// Show Success message
-    print(green(
-        '"$modelPath/${moduleName.snakeCase}_model.dart" generated successfully!'));
+    print(green('"${commandInfo.modelPath}/${commandInfo.moduleSnake}_model.dart" generated successfully!'));
   }
 
   Future<void> updateModelsExport() async {
-    String exportFile = "${moduleName.snakeCase}_model.dart";
-    String modelsFilePath = "$modelPath/models.dart";
+    String exportFile = "${commandInfo.moduleSnake}_model.dart";
+    String modelsFilePath = "${commandInfo.modelPath}/models.dart";
     String modelsFileContent = await Utils.readFile(modelsFilePath);
+
     if (modelsFileContent.contains(exportFile)) {
       /// Show Success message
-      print(green(
-          'export "${moduleName.snakeCase}_model.dart" already exists in $modelsFilePath'));
+      print(green('part "${commandInfo.moduleSnake}_model.dart" already exists in $modelsFilePath'));
       return;
     }
-    modelsFileContent = '$modelsFileContent\nexport \'$exportFile\';\n';
+    modelsFileContent = "$modelsFileContent\npart \"$exportFile\";\n";
 
     /// Write File
     Utils.writeFile(modelsFilePath, modelsFileContent);
 
     /// Show Success message
-    print(green(
-        'export "${moduleName.snakeCase}_model.dart" added to $modelsFilePath'));
+    print(green('part "${commandInfo.moduleSnake}_model.dart" added to $modelsFilePath'));
   }
 }

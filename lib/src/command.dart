@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print
-
 import 'package:args/args.dart';
 import 'package:dcli/dcli.dart';
 import 'services/create_project_service.dart';
@@ -8,22 +6,9 @@ import 'services/make_page_service.dart';
 import 'utilities/utils.dart';
 
 const List<Map<String, String>> _allowedCommands = [
-  {
-    "name": "create",
-    "description": "Creates a new project",
-    'usage':
-        "create <project_name> --version=<template_version> --organization=<organization_name>"
-  },
-  {
-    "name": "make:module",
-    "description": "Generate a new module",
-    'usage': "make:module <module_name>"
-  },
-  {
-    "name": "make:page",
-    "description": "Generate a new page",
-    'usage': "make:page <page_name> --on=<module_name>"
-  },
+  {"name": "create", "description": "Creates a new project", 'usage': "create <project_name> --org=<organization_name>"},
+  {"name": "make:module", "description": "Generate a new module", 'usage': "make:module <module_name>"},
+  {"name": "make:page", "description": "Generate a new page", 'usage': "make:page <page_name> --on=<module_name>"},
 ];
 
 class Command {
@@ -40,9 +25,7 @@ class Command {
 
     final parser = ArgParser()
       ..addOption('on', help: 'Specify the module name for the page.')
-      ..addOption('version',
-          help: 'Specify the version to use for your project.')
-      ..addOption('organization', help: 'Specify the organization name.');
+      ..addOption('org', help: 'Specify the organization name.');
 
     try {
       argResults = parser.parse(args);
