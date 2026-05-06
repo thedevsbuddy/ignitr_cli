@@ -2,6 +2,6 @@
   <div>
     <NuxtRouteAnnouncer />
     <NuxtWelcome />
-    <NuxtLink href="/docs">Docs</NuxtLink>
+    <a href="/docs" rel="noopener noreferrer">Docs</a>
   </div>
 </template>
