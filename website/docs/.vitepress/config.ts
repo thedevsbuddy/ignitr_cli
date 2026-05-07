@@ -20,23 +20,23 @@ export default defineConfig({
         href: "/images/favicon.png",
       },
     ],
-    // [
-    //   "script",
-    //   {
-    //     async: "true",
-    //     src: "https://www.googletagmanager.com/gtag/js?id=G-HLWB1166W9",
-    //   },
-    // ],
-    // [
-    //   "script",
-    //   {},
-    //   [
-    //     "window.dataLayer = window.dataLayer || [];",
-    //     "function gtag(){dataLayer.push(arguments);}",
-    //     "gtag('js', new Date());",
-    //     "gtag('config', 'G-HLWB1166W9');",
-    //   ].join("\n"),
-    // ],
+    [
+      "script",
+      {
+        async: "true",
+        src: "https://www.googletagmanager.com/gtag/js?id=G-HLWB1166W9",
+      },
+    ],
+    [
+      "script",
+      {},
+      [
+        "window.dataLayer = window.dataLayer || [];",
+        "function gtag(){dataLayer.push(arguments);}",
+        "gtag('js', new Date());",
+        "gtag('config', 'G-HLWB1166W9');",
+      ].join("\n"),
+    ],
   ],
   themeConfig: {
     logo: "/images/logo.png",
@@ -55,7 +55,7 @@ export default defineConfig({
     nav: [
       {
         text: "Home",
-        link: "/",
+        link: "https://ignitr.devsbuddy.com",
       },
       {
         text: "Docs",
@@ -65,8 +65,12 @@ export default defineConfig({
 
     sidebar: [
       {
-        text: "Examples",
-        items: [{ text: "Introduction", link: "/introduction" }],
+        text: "Introduction",
+        link: "/",
+      },
+      {
+        text: "Installation",
+        link: "/installation",
       },
     ],
   },
