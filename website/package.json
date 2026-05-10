@@ -4,11 +4,11 @@
   "private": true,
   "scripts": {
     "build": "nuxt build",
-    "dev": "nuxt dev",
+    "dev": "nuxt dev -- -o",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "docs:dev": "vitepress dev docs",
+    "docs:dev": "vitepress dev docs -- -o",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs"
   },
@@ -18,6 +18,9 @@
     "vue-router": "^5.0.6"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.2.4",
+    "tailwindcss": "^4.2.4",
+    "vite-tsconfig-paths": "^6.1.1",
     "vitepress": "^2.0.0-alpha.17"
   }
 }

@@ -10,7 +10,7 @@ dart pub global activate ignitr_cli
 
 ### Usage
 
-Above command will install the `ignitr_cli` globally in your system, now you can use the built in Ignitr commands to get started with your project's development.
+Above command will install the `ignitr_cli` globally in your system and expose `ignitr` executable to run commands, now you can use the built in Ignitr commands to get started with your project's development.
 
 **NOTE: Sometimes ignitr command doesn't work after activating it globally specially when using Git Bash for windows, To solve this please use command as `ignitr.bat <commands>`, Alternatively you can add alias to your `.bashrc` file. To do so please run the following command in your (Git Bash) terminal: `echo alias ignitr=\"ignitr.bat\" >> ~/.bashrc`, If you use `.bash_profile` replace `.bashrc` with `.bash_profile`**
 
