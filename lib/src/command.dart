@@ -1,6 +1,7 @@
 import 'package:args/args.dart';
 import 'package:dcli/dcli.dart';
 import 'services/create_project_service.dart';
+import 'services/make_model_service.dart';
 import 'services/make_module_service.dart';
 import 'services/make_page_service.dart';
 import 'utilities/utils.dart';
@@ -9,6 +10,7 @@ const List<Map<String, String>> _allowedCommands = [
   {"name": "create", "description": "Creates a new project", 'usage': "create <project_name> --org=<organization_name>"},
   {"name": "make:module", "description": "Generate a new module", 'usage': "make:module <module_name>"},
   {"name": "make:page", "description": "Generate a new page", 'usage': "make:page <page_name> --on=<module_name>"},
+  {"name": "make:model", "description": "Generate a new model", 'usage': "make:model <model_name>"},
 ];
 
 class Command {
@@ -58,6 +60,13 @@ class Command {
         final makePageService = MakePageService();
         await makePageService.init(args.skip(1).toList(), argResults);
         await makePageService.handle();
+        await Utils.formatGeneratedCode();
+        break;
+
+      case 'make:model':
+        final makeModelService = MakeModelService();
+        await makeModelService.init(args.skip(1).toList(), argResults);
+        await makeModelService.handle();
         await Utils.formatGeneratedCode();
         break;
 

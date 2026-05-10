@@ -20,20 +20,20 @@ class ModelGenerator extends BaseGenerator {
     String modelFile = parseStub(stubs.firstWhere((item) => item.type == StubType.model).content);
 
     /// Write File
-    Utils.writeFile("${commandInfo.modelPath}/${commandInfo.moduleSnake}_model.dart", modelFile);
+    Utils.writeFile("${commandInfo.modelPath}/${commandInfo.modelSnake}.dart", modelFile);
 
     /// Show Success message
-    print(green('"${commandInfo.modelPath}/${commandInfo.moduleSnake}_model.dart" generated successfully!'));
+    print(green('"${commandInfo.modelPath}/${commandInfo.modelSnake}.dart" generated successfully!'));
   }
 
   Future<void> updateModelsExport() async {
-    String exportFile = "${commandInfo.moduleSnake}_model.dart";
+    String exportFile = "${commandInfo.modelSnake}.dart";
     String modelsFilePath = "${commandInfo.modelPath}/models.dart";
     String modelsFileContent = await Utils.readFile(modelsFilePath);
 
     if (modelsFileContent.contains(exportFile)) {
       /// Show Success message
-      print(green('part "${commandInfo.moduleSnake}_model.dart" already exists in $modelsFilePath'));
+      print(green('part "${commandInfo.modelSnake}.dart" already exists in $modelsFilePath'));
       return;
     }
     modelsFileContent = "$modelsFileContent\npart \"$exportFile\";\n";
@@ -42,6 +42,6 @@ class ModelGenerator extends BaseGenerator {
     Utils.writeFile(modelsFilePath, modelsFileContent);
 
     /// Show Success message
-    print(green('part "${commandInfo.moduleSnake}_model.dart" added to $modelsFilePath'));
+    print(green('part "${commandInfo.modelSnake}.dart" added to $modelsFilePath'));
   }
 }

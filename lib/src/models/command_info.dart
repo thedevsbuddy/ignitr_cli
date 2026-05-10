@@ -8,22 +8,26 @@ class CommandInfo {
   final String? rawProjectName;
   final String? organization;
   final String? pageName;
+  final String? modelName;
 
   late final ReCase module;
   late ReCase project;
   late final ReCase page;
   late final ReCase controller;
+  late final ReCase model;
 
   CommandInfo({
     this.rawModuleName,
     this.rawProjectName,
     this.organization,
     this.pageName,
+    this.modelName,
   }) {
     module = ReCase(Utils.singularize(rawModuleName ?? ""));
     project = ReCase(rawProjectName ?? "");
     page = ReCase(pageName ?? "");
     controller = ReCase(pageName ?? "");
+    model = ReCase(modelName ?? "");
   }
 
   // ========================
@@ -35,12 +39,15 @@ class CommandInfo {
   String get moduleCamel => module.camelCase;
   String get moduleParam => module.paramCase;
 
+  String get modelPascal => model.originalText.isEmpty ? modulePascal : model.pascalCase;
+  String get modelSnake => "${model.originalText.isEmpty ? moduleSnake : model.snakeCase}_model";
+
   String get pagePascal => page.pascalCase;
   String get pageSnake => "${page.originalText.isEmpty ? moduleSnake : page.snakeCase}_page";
   String get controllerPascal => controller.pascalCase;
   String get controllerSnake => "${controller.originalText.isEmpty ? moduleSnake : controller.snakeCase}_controller";
 
-  String get modelClass => "${Utils.singularize(modulePascal)}Model";
+  String get modelClass => "${Utils.singularize(modelPascal)}Model";
   String get controllerClass => controller.originalText.isNotEmpty ? "${controllerPascal}Controller" : "${module.pascalCase}Controller";
   String get pageClass => page.originalText.isNotEmpty ? "${pagePascal}Page" : "${module.pascalCase}Page";
 
