@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:dcli/dcli.dart';
 
+import '../models/layers.dart';
+import '../models/module.dart';
 import '../models/stub.dart';
 import '../utilities/utils.dart';
 import 'base_generator.dart';
@@ -43,6 +47,9 @@ class ModuleGenerator extends BaseGenerator {
 
     // Update Modules Export
     await updateModuleExport();
+
+    // Store module info
+    await _storeModuleMetadata();
   }
 
   Future<void> generateModuleClass() async {
@@ -123,5 +130,34 @@ class ModuleGenerator extends BaseGenerator {
 
     /// Show Success message
     print(green('Added `export "$exportFile"` to `$modulesFilePath`'));
+  }
+
+  Future<void> _storeModuleMetadata() async {
+    Module module = Module(
+      name: commandInfo.modulePascal,
+      slug: commandInfo.moduleSnake,
+      path: "lib/app/modules/${commandInfo.moduleSnake}",
+      layers: Layers(
+        controllers: [
+          "controllers/${commandInfo.controllerSnake}.dart",
+        ],
+        networks: [
+          "networks/${commandInfo.moduleSnake}_client.dart",
+          "networks/api_${commandInfo.moduleSnake}_client.dart",
+        ],
+        routes: [
+          "routes/${commandInfo.moduleSnake}_router.dart",
+        ],
+        views: [
+          "views/${commandInfo.pageSnake}.dart",
+        ],
+      ),
+      entry: "${commandInfo.moduleSnake}.dart",
+    );
+
+    String moduleMetadataFilePath = ".ignitr/modules/${commandInfo.moduleSnake}.json";
+
+    /// Write File
+    Utils.writeFile(moduleMetadataFilePath, jsonEncode(module.toJson()));
   }
 }
