@@ -1,7 +1,7 @@
-import 'dart:io';
+import "dart:io";
 
-import 'package:dcli/dcli.dart';
-import 'package:pluralize/pluralize.dart';
+import "package:dcli/dcli.dart";
+import "package:pluralize/pluralize.dart";
 
 class Utils {
   static void makeDir(String path) {
@@ -31,7 +31,7 @@ class Utils {
   /// Get Color in [int]
   static int getColorFromHex(String hexColor) {
     hexColor = hexColor.toUpperCase().replaceAll("#", "");
-    hexColor = hexColor.replaceAll('0X', '');
+    hexColor = hexColor.replaceAll("0X", "");
     if (hexColor.length == 6) {
       hexColor = "FF$hexColor";
     }
@@ -48,42 +48,42 @@ class Utils {
 
   /// Convert String to each word's first letter caps
   static String ucWords(String text) {
-    return text.trim().split(' ').map((e) => ucFirst(e)).join(' ');
+    return text.trim().split(" ").map((e) => ucFirst(e)).join(" ");
   }
 
   /// Convert String to [snake_case]
   static String snake(String text) {
-    return text.split(' ').map((element) => element.toLowerCase()).join('_');
+    return text.split(" ").map((element) => element.toLowerCase()).join("_");
   }
 
   /// Convert String to [kebab-case]
   static String kebab(String text) {
-    return text.trim().split(' ').map((element) => element.toLowerCase()).join('-');
+    return text.trim().split(" ").map((element) => element.toLowerCase()).join("-");
   }
 
   /// Convert String to [snake_case]
   static String camel(String text) {
-    return text.split(' ').map((element) => ucFirst(element)).join('');
+    return text.split(" ").map((element) => ucFirst(element)).join("");
   }
 
   /// Check if string contains provided character or word
   static String replaceAll(String text, dynamic needle) {
-    return text.replaceAll('.', needle);
+    return text.replaceAll(".", needle);
   }
 
   static Future<void> formatGeneratedCode() async {
-    print(blue('Formatting Generated Code....'));
+    print(blue("Formatting Generated Code...."));
     try {
-      for (final target in ['lib/app', 'lib/routes']) {
-        final result = await Process.run('dart', ['format', target]);
+      for (final target in ["lib/app", "lib/routes", "core/lib"]) {
+        final result = await Process.run("dart", ["format", target]);
         if (result.exitCode == 0) {
           print(blue(result.stdout));
         } else {
-          print(red('Command failed with error code ${result.exitCode}: ${result.stderr}'));
+          print(red("Command failed with error code ${result.exitCode}: ${result.stderr}"));
         }
       }
     } catch (e) {
-      print(red('Error running command: $e'));
+      print(red("Error running command: $e"));
     }
   }
 

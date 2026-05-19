@@ -37,12 +37,12 @@ class Module {
       );
 
   factory Module.fromJson(Map<String, dynamic> json) => Module(
-        name: json['name'],
-        slug: json['slug'],
-        type: json['type'] == 'feature' ? ModuleType.feature : ModuleType.system,
-        path: json['path'],
-        layers: json['layers'] != null ? Layers.fromJson(json['layers']) : Layers(),
-        entry: json['entry'],
+        name: json["name"],
+        slug: json["slug"],
+        type: json["type"] == "feature" ? ModuleType.feature : ModuleType.system,
+        path: json["path"],
+        layers: json["layers"] != null ? Layers.fromJson(json["layers"]) : Layers(),
+        entry: json["entry"],
       );
 
   Map<String, dynamic> toJson() => {

@@ -1,16 +1,16 @@
-import 'dart:convert';
+import "dart:convert";
 
-import 'package:dcli/dcli.dart';
+import "package:dcli/dcli.dart";
 
-import '../models/layers.dart';
-import '../models/module.dart';
-import '../models/stub.dart';
-import '../utilities/utils.dart';
-import 'base_generator.dart';
-import 'client_generator.dart';
-import 'controller_generator.dart';
-import 'model_generator.dart';
-import 'page_generator.dart';
+import "../models/layers.dart";
+import "../models/module.dart";
+import "../models/stub.dart";
+import "../utilities/utils.dart";
+import "base_generator.dart";
+import "client_generator.dart";
+import "controller_generator.dart";
+import "model_generator.dart";
+import "page_generator.dart";
 
 class ModuleGenerator extends BaseGenerator {
   ModuleGenerator(super.commandInfo);
@@ -56,8 +56,8 @@ class ModuleGenerator extends BaseGenerator {
     /// Check and create directory
     Utils.makeDir(commandInfo.modulePath);
 
-    String moduleFile = stubs.firstWhere((item) => item.type == StubType.module).content.replaceAll('{SNAKE_MODULE}', commandInfo.moduleSnake);
-    moduleFile = moduleFile.replaceAll('{MODULE}', commandInfo.modulePascal);
+    String moduleFile = stubs.firstWhere((item) => item.type == StubType.module).content.replaceAll("{SNAKE_MODULE}", commandInfo.moduleSnake);
+    moduleFile = moduleFile.replaceAll("{MODULE}", commandInfo.modulePascal);
 
     for (var entry in nameReplacements.entries) {
       moduleFile = moduleFile.replaceAll(entry.key, entry.value);
@@ -88,19 +88,19 @@ class ModuleGenerator extends BaseGenerator {
     String exportLine = [
       "...${commandInfo.modulePascal}Router.routes,",
       "//%...routes%//",
-    ].join('\n\t');
+    ].join("\n\t");
 
     String baseRouteFilePath = "${commandInfo.baseRoutePath}/router.dart";
     String routeFileContent = await Utils.readFile(baseRouteFilePath);
 
     if (routeFileContent.contains("...${commandInfo.modulePascal}Router.routes,")) {
-      print(yellow('Route export arleady exists in $baseRouteFilePath'));
+      print(yellow("Route export arleady exists in $baseRouteFilePath"));
       return;
     }
 
     if (!routeFileContent.contains("//%...routes%//")) {
-      print(yellow('Route export can not be added to `$baseRouteFilePath`'));
-      print(red('Please add: `//%...routes%//` in `$baseRouteFilePath`` before `];`'));
+      print(yellow("Route export can not be added to `$baseRouteFilePath`"));
+      print(red("Please add: `//%...routes%//` in `$baseRouteFilePath`` before `];`"));
       return;
     }
 
@@ -110,7 +110,7 @@ class ModuleGenerator extends BaseGenerator {
     Utils.writeFile(baseRouteFilePath, routeFileContent);
 
     /// Show Success message
-    print(green('Route export added to `$baseRouteFilePath`'));
+    print(green("Route export added to `$baseRouteFilePath`"));
   }
 
   Future<void> updateModuleExport() async {

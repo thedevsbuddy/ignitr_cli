@@ -1,7 +1,7 @@
-import 'package:path/path.dart';
-import 'package:recase/recase.dart';
+import "package:path/path.dart";
+import "package:recase/recase.dart";
 
-import '../utilities/utils.dart';
+import "../utilities/utils.dart";
 
 class CommandInfo {
   final String? rawModuleName;

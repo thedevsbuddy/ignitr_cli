@@ -22,9 +22,9 @@ class Stub {
 
   Map<String, dynamic> toJson() {
     return {
-      'name': name,
-      'type': type.name,
-      'content': content,
+      "name": name,
+      "type": type.name,
+      "content": content,
     };
   }
 }

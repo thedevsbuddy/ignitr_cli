@@ -1,8 +1,8 @@
-import 'package:dcli/dcli.dart';
-import '../models/stub.dart';
+import "package:dcli/dcli.dart";
+import "../models/stub.dart";
 
-import 'base_generator.dart';
-import '../utilities/utils.dart';
+import "base_generator.dart";
+import "../utilities/utils.dart";
 
 class ClientGenerator extends BaseGenerator {
   ClientGenerator(super.commandInfo);

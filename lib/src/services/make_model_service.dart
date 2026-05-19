@@ -1,8 +1,8 @@
-import 'package:args/args.dart';
+import "package:args/args.dart";
 
-import '../generators/model_generator.dart';
-import '../models/command_info.dart';
-import 'base_service.dart';
+import "../generators/model_generator.dart";
+import "../models/command_info.dart";
+import "base_service.dart";
 
 class MakeModelService extends BaseService {
   String? modelName;

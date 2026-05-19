@@ -25,10 +25,10 @@ class Layers {
       );
 
   factory Layers.fromJson(Map<String, dynamic> json) => Layers(
-        controllers: List<String>.from(json['controllers'] ?? []),
-        networks: List<String>.from(json['networks'] ?? []),
-        routes: List<String>.from(json['routes'] ?? []),
-        views: List<String>.from(json['views'] ?? []),
+        controllers: List<String>.from(json["controllers"] ?? []),
+        networks: List<String>.from(json["networks"] ?? []),
+        routes: List<String>.from(json["routes"] ?? []),
+        views: List<String>.from(json["views"] ?? []),
       );
 
   Map<String, dynamic> toJson() => {

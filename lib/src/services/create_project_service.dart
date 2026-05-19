@@ -1,8 +1,8 @@
-import 'package:args/args.dart';
+import "package:args/args.dart";
 
-import '../generators/project_generator.dart';
-import '../models/command_info.dart';
-import 'base_service.dart';
+import "../generators/project_generator.dart";
+import "../models/command_info.dart";
+import "base_service.dart";
 
 class CreateProjectService extends BaseService {
   String? projectName;
@@ -14,7 +14,7 @@ class CreateProjectService extends BaseService {
   Future<void> init(List<String> args, ArgResults argResults) async {
     await super.init(args, argResults);
     projectName = args.isNotEmpty ? args.first : null;
-    organizationName = argResults['org'];
+    organizationName = argResults["org"];
     projectName ??= askName("Project");
     organizationName ??= askOrganization();
 
