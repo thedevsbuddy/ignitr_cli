@@ -40,7 +40,13 @@ class SpacingGenerator extends BaseGenerator {
     final scale = yaml["scale"];
 
     buffer.writeln(
+      "/// Returns Base Value (double): ${base * 1.0}",
+    );
+    buffer.writeln(
       "const double _base = $base;",
+    );
+    buffer.writeln(
+      "/// Returns Base Value (double): ${base * 1.0}",
     );
     buffer.writeln(
       "const double kSpacer = _base;",
@@ -56,8 +62,12 @@ class SpacingGenerator extends BaseGenerator {
       }
 
       buffer.writeln(
+        "/// Returns (double): ${base * scaleValue * 1.0}",
+      );
+      buffer.writeln(
         "const double kSpacer$scaleName = _base * $scaleValue;",
       );
+      buffer.writeln();
     }
   }
 }
