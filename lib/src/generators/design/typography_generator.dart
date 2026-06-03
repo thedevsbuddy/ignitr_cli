@@ -1,8 +1,9 @@
 import "dart:io";
 
+import "package:yaml/yaml.dart";
+
 import "../../utilities/utils.dart";
 import "../base_generator.dart";
-import "package:yaml/yaml.dart";
 
 class TypographyGenerator extends BaseGenerator {
   TypographyGenerator(super.commandInfo);
@@ -24,7 +25,7 @@ class TypographyGenerator extends BaseGenerator {
 
     _writeHeader(buffer);
     _writeTextStylClass(buffer, yaml);
-    _writeSupportClasses(buffer);
+    _writeSupportClasses(buffer, yaml);
 
     Utils.writeFile(outputPath, buffer.toString());
   }
@@ -32,13 +33,15 @@ class TypographyGenerator extends BaseGenerator {
   void _writeHeader(StringBuffer buffer) {
     buffer.writeln("// GENERATED CODE - DO NOT MODIFY BY HAND");
     buffer.writeln();
-    buffer.writeln("part of \"package:core/core.dart\";");
+    buffer.writeln('part of "package:core/core.dart";');
     buffer.writeln();
   }
 
   void _writeTextStylClass(StringBuffer buffer, dynamic yaml) {
     final styles = yaml["styles"];
     final weights = yaml["weights"];
+
+    final classMap = _buildTypographyClassMap(styles);
 
     buffer.writeln("class TextStyl {");
 
@@ -49,15 +52,19 @@ class TypographyGenerator extends BaseGenerator {
       final base = styleConfig["base"];
       final sizes = styleConfig["sizes"];
 
+      final sizeNames = sizes.keys.cast<String>().toList();
+
+      final className = classMap[sizeNames.join("|")]!;
+
       buffer.writeln(
-        "static Typography $styleName(BuildContext context) {",
+        "static $className $styleName(BuildContext context) {",
       );
 
       buffer.writeln(
-        "TextStyle? base = Theme.of(context).textTheme.$base;",
+        "final TextStyle? base = Theme.of(context).textTheme.$base;",
       );
 
-      buffer.writeln("return Typography(");
+      buffer.writeln("return $className(");
 
       for (final sizeEntry in sizes.entries) {
         final sizeName = sizeEntry.key;
@@ -86,42 +93,104 @@ class TypographyGenerator extends BaseGenerator {
 
       buffer.writeln(");");
       buffer.writeln("}");
+      buffer.writeln();
     }
+
+    buffer.writeln("}");
+    buffer.writeln();
+  }
+
+  void _writeSupportClasses(
+    StringBuffer buffer,
+    dynamic yaml,
+  ) {
+    final styles = yaml["styles"];
+    final weights = yaml["weights"];
+
+    final generatedClasses = <String>{};
+
+    for (final styleEntry in styles.entries) {
+      final sizes = styleEntry.value["sizes"];
+
+      final sizeNames = sizes.keys.cast<String>().toList();
+
+      final className = "TypographySize${sizeNames.map(_capitalize).join()}";
+
+      if (!generatedClasses.add(className)) {
+        continue;
+      }
+
+      buffer.writeln("class $className {");
+
+      for (final sizeName in sizeNames) {
+        buffer.writeln(
+          "final TypographyWeight $sizeName;",
+        );
+      }
+
+      buffer.writeln();
+
+      buffer.writeln("$className({");
+
+      for (final sizeName in sizeNames) {
+        buffer.writeln(
+          "required this.$sizeName,",
+        );
+      }
+
+      buffer.writeln("});");
+
+      buffer.writeln("}");
+      buffer.writeln();
+    }
+
+    buffer.writeln("class TypographyWeight {");
+
+    for (final weightName in weights.keys) {
+      buffer.writeln(
+        "final TextStyle? $weightName;",
+      );
+    }
+
+    buffer.writeln();
+
+    buffer.writeln("TypographyWeight({");
+
+    for (final weightName in weights.keys) {
+      buffer.writeln(
+        "this.$weightName,",
+      );
+    }
+
+    buffer.writeln("});");
 
     buffer.writeln("}");
   }
 
-  void _writeSupportClasses(StringBuffer buffer) {
-    buffer.writeln("""
-      class Typography {
-        final TypographyWeight xs;
-        final TypographyWeight sm;
-        final TypographyWeight md;
-        final TypographyWeight lg;
-        final TypographyWeight xl;
+  Map<String, String> _buildTypographyClassMap(
+    dynamic styles,
+  ) {
+    final map = <String, String>{};
 
-        Typography({
-          required this.xs,
-          required this.sm,
-          required this.md,
-          required this.lg,
-          required this.xl,
-        });
-      }
+    for (final styleEntry in styles.entries) {
+      final sizes = styleEntry.value["sizes"];
 
-      class TypographyWeight {
-        final TextStyle? regular;
-        final TextStyle? medium;
-        final TextStyle? semibold;
-        final TextStyle? bold;
+      final sizeNames = sizes.keys.cast<String>().toList();
 
-        TypographyWeight({
-          this.regular,
-          this.medium,
-          this.semibold,
-          this.bold,
-        });
-      }
-    """);
+      final signature = sizeNames.join("|");
+
+      map.putIfAbsent(
+        signature,
+        () => "TypographySize${sizeNames.map(_capitalize).join()}",
+      );
+    }
+
+    return map;
+  }
+
+  String _capitalize(String value) {
+    if (value.isEmpty) return value;
+
+    return value[0].toUpperCase() + value.substring(1);
   }
 }

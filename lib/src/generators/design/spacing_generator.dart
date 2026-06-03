@@ -14,7 +14,7 @@ class SpacingGenerator extends BaseGenerator {
     final file = File(inputPath);
 
     if (!file.existsSync()) {
-      throw Exception("Typography config not found: $inputPath");
+      throw Exception("Spacing config not found: $inputPath");
     }
 
     final yamlString = await file.readAsString();
